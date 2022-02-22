@@ -1,0 +1,5 @@
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/document_writer_db
+    username: postgres
+    password: Tux#997799
