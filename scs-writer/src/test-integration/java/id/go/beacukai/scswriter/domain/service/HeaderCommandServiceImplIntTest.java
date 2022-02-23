@@ -1,20 +1,13 @@
 package id.go.beacukai.scswriter.domain.service;
 
 import id.go.beacukai.scswriter.application.port.incoming.HeaderCommandService;
+import id.go.beacukai.scswriter.config.TestContainerConfiguration;
 import id.go.beacukai.scswriter.domain.entity.Header;
-import io.r2dbc.spi.ConnectionFactory;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.r2dbc.connection.init.CompositeDatabasePopulator;
-import org.springframework.r2dbc.connection.init.ConnectionFactoryInitializer;
-import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -27,12 +20,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @ActiveProfiles({ "test" })
+@Import(TestContainerConfiguration.class)
 class HeaderCommandServiceImplIntTest {
 
     @Container
@@ -48,21 +41,6 @@ class HeaderCommandServiceImplIntTest {
                 "/" + postgreSQLContainer.getDatabaseName());
         registry.add("spring.r2dbc.username", () -> postgreSQLContainer.getUsername());
         registry.add("spring.r2dbc.password", () -> postgreSQLContainer.getPassword());
-    }
-
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        public ConnectionFactoryInitializer initializer(ConnectionFactory connectionFactory) {
-            ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
-            initializer.setConnectionFactory(connectionFactory);
-
-            CompositeDatabasePopulator populator = new CompositeDatabasePopulator();
-            populator.addPopulators(new ResourceDatabasePopulator(new ClassPathResource("schema.sql")));
-            initializer.setDatabasePopulator(populator);
-
-            return initializer;
-        }
     }
 
     @Test
