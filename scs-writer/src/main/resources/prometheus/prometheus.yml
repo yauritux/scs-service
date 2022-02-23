@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default to 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout: is set to the global default (10s).
+
+scrape_configs:
+  - job_name: 'prometheus'
+    # metrics_path: default to '/metrics'
+    # scheme default to 'http'
+    static_configs:
+      - targets: ['10.20.10.231:9090']
+  - job_name: 'spring-actuator'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['10.20.10.231:8081', '10.20.10.231:8082'] # check ip on mac using ipconfig getifaddr en0

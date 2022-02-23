@@ -21,7 +21,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./scs-command/src/main/resources/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./scs-writer/src/main/resources/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - beacukaiNet
 
