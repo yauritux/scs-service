@@ -102,7 +102,7 @@ public class Header {
     private String kodeTujuanTpb;
     private String kodeTutupPu;
     private String kodeValuta;
-    private String kotaTtd;
+    private String kodeTtd;
     private String lokasiAsal;
     private String lokasiTujuan;
     private String namaCaraBayar;
