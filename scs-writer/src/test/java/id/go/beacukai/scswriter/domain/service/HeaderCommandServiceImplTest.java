@@ -12,6 +12,7 @@ import reactor.test.StepVerifier;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,6 +31,7 @@ class HeaderCommandServiceImplTest {
     @Test
     void createDocumentHeader() {
         Header header = new Header();
+        header.setIdHeader(UUID.randomUUID().toString());
         header.setAsalData("W");
         header.setJumlahKontainer(0);
         header.setIdPerusahaan("1234567890");
