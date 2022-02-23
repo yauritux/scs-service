@@ -36,7 +36,7 @@ class HeaderCommandServiceImplTest {
         header.setKodeDokumen("20");
 
         when(headerCommandRepositoryMock.countByIdPerusahaan(header.getIdPerusahaan()))
-                .thenReturn(1L);
+                .thenReturn(Mono.just(1L));
         when(headerCommandRepositoryMock.save(isA(Header.class))).thenReturn(Mono.just(header));
 
         var currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
