@@ -1,6 +1,5 @@
 package id.go.beacukai.scswriter.domain.service;
 
-import id.go.beacukai.scswriter.application.port.incoming.HeaderCommandService;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCommandRepository;
 import id.go.beacukai.scswriter.domain.entity.Header;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,8 @@ import reactor.test.StepVerifier;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
 
@@ -39,14 +39,13 @@ class HeaderCommandServiceImplTest {
                 .thenReturn(1L);
         when(headerCommandRepositoryMock.save(isA(Header.class))).thenReturn(Mono.just(header));
 
-        var newHeader = headerCommandService.createDocumentHeader(header).log();
-
         var currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-        StepVerifier.create(newHeader)
+        headerCommandService.createDocumentHeader(header).as(StepVerifier::create)
                 .consumeNextWith(createdHeader -> {
                     assert createdHeader != null;
                     assert createdHeader.getIdHeader() != null;
+                    assertTrue(createdHeader.getIdHeader() instanceof String);
                     assert createdHeader.getNomorAju() != null;
                     assertEquals("000020123456" + currentDate + "000002", createdHeader.getNomorAju());
                 })
