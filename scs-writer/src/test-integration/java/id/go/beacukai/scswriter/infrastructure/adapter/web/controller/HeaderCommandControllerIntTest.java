@@ -19,6 +19,9 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -63,7 +66,8 @@ class HeaderCommandControllerIntTest {
         header.setIdPerusahaan("1234567890");
         header.setNamaPerusahaan("DEMO PORTAL");
         header.setRoleEntitas("IMPORTIR");
-        header.setNomorAju("00002012345620220222000001");
+
+        var currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
         webTestClient
                 .post()
@@ -71,6 +75,15 @@ class HeaderCommandControllerIntTest {
                 .bodyValue(header)
                 .exchange()
                 .expectStatus()
-                .isCreated();
+                .isCreated()
+                .expectBody(Header.class)
+                .consumeWith(headerEntityExchangeResult -> {
+                    var responseBody = headerEntityExchangeResult.getResponseBody();
+                    assertThat(responseBody).isNotNull();
+                    assertThat(responseBody.getIdHeader()).isNotNull();
+                    assertThat(responseBody.getIdHeader()).isInstanceOf(String.class);
+                    assertThat(responseBody.getNomorAju()).isNotNull();
+                    assertThat(responseBody.getNomorAju()).isEqualTo("000020123456" + currentDate + "000001");
+                });
     }
 }
