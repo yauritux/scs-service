@@ -34,7 +34,7 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
         var df = DateTimeFormatter.ofPattern("yyyyMMdd");
         str.append(LocalDate.now().format(df));
         synchronized (this) {
-            long nextNo = headerCommandRepository.countByIdPerusahaan(idPerusahaan) + 1;
+            var nextNo = headerCommandRepository.countByIdPerusahaan(idPerusahaan).block() + 1;
             str.append("0".repeat(6 - Long.toString(nextNo).length()));
             str.append(nextNo);
         }
