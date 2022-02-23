@@ -86,4 +86,25 @@ class HeaderCommandControllerIntTest {
                     assertThat(responseBody.getNomorAju()).isEqualTo("000020123456" + currentDate + "000001");
                 });
     }
+
+    @Test
+    void createNewHeader_badRequest() {
+        var header = new Header();
+        header.setKodeDokumen("20");
+        header.setRoleEntitas("IMPORTIR");
+
+        webTestClient
+                .post()
+                .uri(HEADER_URI)
+                .bodyValue(header)
+                .exchange()
+                .expectStatus()
+                .isBadRequest()
+                .expectBody(String.class)
+                .consumeWith(stringEntityExchangeResult -> {
+                    var responseBody = stringEntityExchangeResult.getResponseBody();
+                    var expectedErrorMessage = "asalData tidak boleh kosong!,idPerusahaan tidak boleh kosong!,namaPerusahaan tidak boleh kosong!";
+                    assertThat(responseBody).isEqualTo(expectedErrorMessage);
+                });
+    }
 }
