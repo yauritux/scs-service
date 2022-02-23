@@ -9,6 +9,7 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class HeaderCommandServiceImpl implements HeaderCommandService {
@@ -21,11 +22,15 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
 
     @Override
     public Mono<Header> createDocumentHeader(Header header) {
-        header.setNomorAju(newNomorAju(header.getKodeDokumen(), header.getIdPerusahaan()));
+        try {
+            header.setNomorAju(newNomorAju(header.getKodeDokumen(), header.getIdPerusahaan()));
+        } catch (ExecutionException | InterruptedException e) {
+            return Mono.error(e);
+        }
         return headerCommandRepository.save(header);
     }
 
-    private final String newNomorAju(String kodeDokumen, String idPerusahaan) {
+    private final String newNomorAju(String kodeDokumen, String idPerusahaan) throws ExecutionException, InterruptedException {
         var str = new StringBuffer();
         str.append("0".repeat(6 - kodeDokumen.length()));
         str.append(kodeDokumen);
@@ -33,7 +38,8 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
         var df = DateTimeFormatter.ofPattern("yyyyMMdd");
         str.append(LocalDate.now().format(df));
         synchronized (this) {
-            var nextNo = headerCommandRepository.countByIdPerusahaan(idPerusahaan).block() + 1;
+            var count = headerCommandRepository.countByIdPerusahaan(idPerusahaan).toFuture().get();
+            var nextNo = count + 1;
             str.append("0".repeat(6 - Long.toString(nextNo).length()));
             str.append(nextNo);
         }
