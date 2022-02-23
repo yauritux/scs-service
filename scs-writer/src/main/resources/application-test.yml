@@ -1,0 +1,5 @@
+spring:
+  r2dbc:
+    url: r2dbc:tc:postgresql://document_writer_testdb?TC_IMAGE_TAG=14.2
+    username: postgres
+    password: Tux#997799
