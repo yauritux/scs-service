@@ -1,5 +1,6 @@
-package id.go.beacukai.scswriter.application.port.outgoing;
+package id.go.beacukai.scswriter.domain.service;
 
+import id.go.beacukai.scswriter.application.port.incoming.HeaderCommandService;
 import id.go.beacukai.scswriter.domain.entity.Header;
 import io.r2dbc.spi.ConnectionFactory;
 import org.junit.jupiter.api.AfterEach;
@@ -7,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
@@ -22,21 +23,23 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.test.StepVerifier;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
-@DataR2dbcTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-@ActiveProfiles({"test"})
-class HeaderCommandRepositoryTest {
+@ActiveProfiles({ "test" })
+class HeaderCommandServiceImplIntTest {
 
     @Container
     static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:14");
 
     @Autowired
-    private HeaderCommandRepository headerCommandRepository;
+    HeaderCommandService headerCommandService;
 
     @DynamicPropertySource
     static void registerDynamicProperties(DynamicPropertyRegistry registry) {
@@ -45,23 +48,6 @@ class HeaderCommandRepositoryTest {
                 "/" + postgreSQLContainer.getDatabaseName());
         registry.add("spring.r2dbc.username", () -> postgreSQLContainer.getUsername());
         registry.add("spring.r2dbc.password", () -> postgreSQLContainer.getPassword());
-    }
-
-    @BeforeEach
-    void setUp() {
-        var header = new Header();
-        header.setKodeDokumen("20");
-        header.setAsalData("W");
-        header.setIdPerusahaan("1234567890");
-        header.setNamaPerusahaan("DEMO PORTAL");
-        header.setRoleEntitas("IMPORTIR");
-        header.setNomorAju("00002012345620220222000001");
-        headerCommandRepository.saveAll(List.of(header)).blockLast();
-    }
-
-    @AfterEach
-    void tearDown() {
-        headerCommandRepository.deleteAll().block();
     }
 
     @TestConfiguration
@@ -79,29 +65,32 @@ class HeaderCommandRepositoryTest {
         }
     }
 
-
     @Test
-    void testHeaderCommandRepositoryExisted() {
-        assertThat(headerCommandRepository).isNotNull();
+    void testHeaderComandServiceExisted() {
+        assertThat(headerCommandService).isNotNull();
     }
 
     @Test
-    void findAll() {
-        headerCommandRepository.findAll().as(StepVerifier::create)
-                .consumeNextWith(header -> {
-                    assertThat(header).isNotNull();
-                    assertThat(header.getIdHeader()).isNotNull();
-                    assertThat(header.getIdHeader()).isInstanceOf(String.class);
-                    assertThat(header.getKodeDokumen()).isEqualTo("20");
-                    assertThat(header.getAsalData()).isEqualTo("W");
-                    assertThat(header.getNomorAju()).isEqualTo("00002012345620220222000001");
-                }).verifyComplete();
-    }
+    void createDocumentHeader() {
+        var header = new Header();
+        header.setKodeDokumen("20");
+        header.setAsalData("W");
+        header.setIdPerusahaan("1234567890");
+        header.setNamaPerusahaan("DEMO PORTAL");
+        header.setRoleEntitas("IMPORTIR");
 
-    @Test
-    void countByIdPerusahaan() {
-        headerCommandRepository.countByIdPerusahaan("1234567890").as(StepVerifier::create)
-                        .expectNextCount(1L)
-                                .verifyComplete();
+        var currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        var createdHeader = headerCommandService.createDocumentHeader(header).log();
+
+        StepVerifier.create(createdHeader)
+                .consumeNextWith(newHeader -> {
+                    assertThat(newHeader).isNotNull();
+                    assertThat(newHeader.getIdHeader()).isNotNull();
+                    assertThat(newHeader.getIdHeader()).isInstanceOf(String.class);
+                    assertThat(newHeader.getNomorAju()).isNotNull();
+                    assertThat(newHeader.getNomorAju()).isEqualTo("000020123456" + currentDate + "000001");
+                })
+                .verifyComplete();
     }
 }

@@ -21,7 +21,6 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
 
     @Override
     public Mono<Header> createDocumentHeader(Header header) {
-        header.setIdHeader(UUID.randomUUID().toString());
         header.setNomorAju(newNomorAju(header.getKodeDokumen(), header.getIdPerusahaan()));
         return headerCommandRepository.save(header);
     }
