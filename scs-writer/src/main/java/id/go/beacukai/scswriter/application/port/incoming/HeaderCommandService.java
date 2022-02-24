@@ -5,4 +5,5 @@ import reactor.core.publisher.Mono;
 
 public interface HeaderCommandService {
     Mono<Header> createDocumentHeader(Header header);
+    Mono<Header> updateDocumentHeader(Header header, String id);
 }
