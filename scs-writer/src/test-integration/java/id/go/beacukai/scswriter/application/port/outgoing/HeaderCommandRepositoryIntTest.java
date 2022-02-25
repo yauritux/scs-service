@@ -9,6 +9,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -34,6 +35,8 @@ class HeaderCommandRepositoryIntTest {
     @Autowired
     private HeaderCommandRepository headerCommandRepository;
 
+    private Header newDocumentHeader;
+
     @DynamicPropertySource
     static void registerDynamicProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.r2dbc.url", () -> "r2dbc:postgresql://" +
@@ -53,6 +56,14 @@ class HeaderCommandRepositoryIntTest {
         header.setRoleEntitas("IMPORTIR");
         header.setNomorAju("00002012345620220222000001");
         headerCommandRepository.saveAll(List.of(header)).blockLast();
+
+        newDocumentHeader = new Header();
+        newDocumentHeader.setKodeDokumen("20");
+        newDocumentHeader.setAsalData("W");
+        newDocumentHeader.setRoleEntitas("IMPORTIR");
+        newDocumentHeader.setIdPerusahaan("1234567890");
+        newDocumentHeader.setNamaPerusahaan("PT. DEMO PORTAL");
+        newDocumentHeader.setNomorAju("00002012345620220222000001");
     }
 
     @AfterEach
@@ -81,7 +92,97 @@ class HeaderCommandRepositoryIntTest {
     @Test
     void countByIdPerusahaan() {
         headerCommandRepository.countByIdPerusahaan("1234567890").as(StepVerifier::create)
-                        .expectNextCount(1L)
-                                .verifyComplete();
+                .expectNextCount(1L)
+                .verifyComplete();
     }
+
+    @Test
+    void saveForUpdate_forNonExistedRecord_shouldGetAnError() {
+        var updatedHeader = new Header();
+        updatedHeader.setIdHeader("ABC");
+        updatedHeader.setKodeDokumen("20");
+        updatedHeader.setAsalData("W");
+        updatedHeader.setIdPerusahaan("1234567890");
+        updatedHeader.setRoleEntitas("IMPORTIR");
+        updatedHeader.setNomorAju("00002012345620220222000001");
+
+        headerCommandRepository.save(updatedHeader).as(StepVerifier::create)
+                .expectErrorMessage("Failed to update table [header]. Row with Id [ABC] does not exist.")
+                .verify();
+    }
+
+    @Test
+    void saveNewHeader_forDuplicatedNomorAju_shouldGetAnError() {
+        headerCommandRepository.save(newDocumentHeader).as(StepVerifier::create)
+                .expectErrorSatisfies(ex -> {
+                    assertThat(ex.getMessage().contains(
+                            "duplicate key value violates unique constraint \"header_nomor_aju_key\"")).isTrue();
+                })
+                .verify();
+    }
+
+    @Test
+    void saveNewHeader_missingIdPerusahaan_shouldGetAnError() {
+        newDocumentHeader.setIdPerusahaan(null);
+
+        headerCommandRepository.save(newDocumentHeader).as(StepVerifier::create)
+                .expectErrorSatisfies(ex -> {
+                    assertThat(ex.getMessage().contains(
+                            "null value in column \"id_perusahaan\" of relation \"header\" violates not-null constraint"
+                    )).isTrue();
+                })
+                .verify();
+    }
+
+    @Test
+    void saveNewHeader_missingNamaPerusahaan_shouldGetAnError() {
+        newDocumentHeader.setNamaPerusahaan(null);
+
+        headerCommandRepository.save(newDocumentHeader)
+                .as(StepVerifier::create)
+                .expectError(DataIntegrityViolationException.class)
+                .verify();
+    }
+
+    @Test
+    void saveNewHeader_missingAsalData_shouldGetAnError() {
+        newDocumentHeader.setAsalData(null);
+
+        headerCommandRepository.save(newDocumentHeader).as(StepVerifier::create)
+                .expectErrorSatisfies(ex -> {
+                    assertThat(ex.getMessage().contains(
+                            "null value in column \"asal_data\" of relation \"header\" violates not-null constraint"
+                    )).isTrue();
+                })
+                .verify();
+    }
+
+    @Test
+    void saveNewHeader_missingKodeDokumen_shouldGetAnError() {
+        newDocumentHeader.setKodeDokumen(null);
+
+        headerCommandRepository.save(newDocumentHeader).as(StepVerifier::create)
+                .expectError(DataIntegrityViolationException.class)
+                .verify();
+    }
+
+    @Test
+    void saveNewHeader_missingRoleEntitas_shouldGetAnError() {
+        newDocumentHeader.setRoleEntitas(null);
+
+        headerCommandRepository.save(newDocumentHeader).as(StepVerifier::create)
+                .expectError(DataIntegrityViolationException.class)
+                .verify();
+    }
+
+    @Test
+    void saveNewHeader_missingNomorAju_shouldGetAnError() {
+        newDocumentHeader.setNomorAju(null);
+
+        headerCommandRepository.save(newDocumentHeader).as(StepVerifier::create)
+                .expectError(DataIntegrityViolationException.class)
+                .verify();
+    }
+
+
 }
