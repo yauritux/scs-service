@@ -91,8 +91,7 @@ class HeaderCommandServiceImplTest {
                 .consumeNextWith(newUpdatedHeader -> {
                     assert newUpdatedHeader != null;
                     assert newUpdatedHeader.getIdHeader().equals(idHeader);
-//                    assert newUpdatedHeader.getJumlahVolume() == 2500.25;
-                    assert newUpdatedHeader.getJumlahVolume() == 0.00;
+                    assert newUpdatedHeader.getJumlahVolume() == 2500.25;
                     assert newUpdatedHeader.getJumlahNilaiBarang().compareTo(BigDecimal.valueOf(1_000_000)) == 0;
                 })
                 .verifyComplete();
