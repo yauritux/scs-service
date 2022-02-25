@@ -28,7 +28,7 @@ class HeaderCommandServiceImplTest {
     private HeaderCommandRepository headerCommandRepositoryMock;
 
     private HeaderCommandServiceImpl headerCommandService;
-    
+
     @BeforeEach
     void setUp() {
         headerCommandService = new HeaderCommandServiceImpl(headerCommandRepositoryMock);
