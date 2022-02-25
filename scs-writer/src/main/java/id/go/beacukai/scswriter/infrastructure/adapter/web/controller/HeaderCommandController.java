@@ -26,7 +26,9 @@ public class HeaderCommandController {
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<Header>> updateHeader(@RequestBody @Valid Header header, @PathVariable String id) {
-        return Mono.empty();
+    public Mono<ResponseEntity<Header>> updateHeader(@RequestBody Header updatedHeader, @PathVariable String id) {
+        return headerCommandService.updateDocumentHeader(updatedHeader, id)
+                .map(ResponseEntity.ok()::body)
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 }
