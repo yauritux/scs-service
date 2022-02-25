@@ -93,6 +93,8 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
                     currentHeader.setKodeKantorMuat(updatedHeader.getKodeKantorMuat());
                     currentHeader.setKodeKantorPeriksa(updatedHeader.getKodeKantorPeriksa());
                     currentHeader.setKodeKantorTujuan(updatedHeader.getKodeKantorTujuan());
+                    currentHeader.setLokasiAsal(updatedHeader.getLokasiAsal());
+                    currentHeader.setLokasiTujuan(updatedHeader.getLokasiTujuan());
                     return headerCommandRepository.save(currentHeader);
                 });
     }
