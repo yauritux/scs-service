@@ -3,6 +3,7 @@ package id.go.beacukai.scswriter.domain.service;
 import id.go.beacukai.scswriter.application.port.incoming.HeaderCommandService;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCommandRepository;
 import id.go.beacukai.scswriter.domain.entity.Header;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -23,7 +24,7 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
     public Mono<Header> createDocumentHeader(Header header) {
         try {
             header.setNomorAju(newNomorAju(header.getKodeDokumen(), header.getIdPerusahaan()));
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (DataIntegrityViolationException | ExecutionException | InterruptedException e) {
             return Mono.error(e);
         }
         return headerCommandRepository.save(header);
@@ -96,7 +97,14 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
                 });
     }
 
-    private final String newNomorAju(String kodeDokumen, String idPerusahaan) throws ExecutionException, InterruptedException {
+    private final String newNomorAju(String kodeDokumen, String idPerusahaan)
+            throws DataIntegrityViolationException, ExecutionException, InterruptedException {
+        if (kodeDokumen == null || kodeDokumen.trim().equals("")) {
+            throw new DataIntegrityViolationException("\"kodeDokumen\" cannot be empty!");
+        }
+        if (idPerusahaan == null || idPerusahaan.trim().equals("")) {
+            throw new DataIntegrityViolationException("\"idPerusahaan\" cannot be empty!");
+        }
         var str = new StringBuffer();
         str.append("0".repeat(6 - kodeDokumen.length()));
         str.append(kodeDokumen);
