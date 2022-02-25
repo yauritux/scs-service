@@ -204,4 +204,6 @@ OR
 ## Execute All Unit Tests + Integration Tests
 
 1. `cd` into the root project directory
-2. `mvn test`
+2. `mvn clean test`
+
+In order to see how much your code being covered by the automation tests, you can open the file `scs-writer/target/site/jacoco/index.html` in your browser.
