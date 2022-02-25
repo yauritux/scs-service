@@ -13,7 +13,7 @@ services:
       - 5432:5432
     volumes:
       - scswdb:/var/lib/postgresql/data
-      - ./scs-writer/src/test-integration/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      - ./scs-writer/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     networks:
       - beacukaiNet
 
