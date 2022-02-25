@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -40,7 +41,7 @@ class HeaderCommandServiceImplTest {
     }
 
     @Test
-    void createDocumentHeader() {
+    void createDocumentHeader_recordIsCreated() {
         Header header = new Header();
         header.setIdHeader(UUID.randomUUID().toString());
         header.setAsalData("W");
@@ -66,7 +67,49 @@ class HeaderCommandServiceImplTest {
     }
 
     @Test
-    void updateDocumentHeader() {
+    void createDocumentHeader_noGivenKodeDokumen_shouldGetAnError() {
+        Header header = new Header();
+        header.setIdHeader(UUID.randomUUID().toString());
+
+        headerCommandService.createDocumentHeader(header).as(StepVerifier::create)
+                .expectErrorMessage("\"kodeDokumen\" cannot be empty!")
+                .verify();
+    }
+
+    @Test
+    void createDocumentHeader_noGivenKodeDokumen_shouldGetADataIntegrityException() {
+        Header header = new Header();
+        header.setIdHeader(UUID.randomUUID().toString());
+
+        headerCommandService.createDocumentHeader(header).as(StepVerifier::create)
+                .expectError(DataIntegrityViolationException.class)
+                .verify();
+    }
+
+    @Test
+    void createDocumentHeader_noGivenIdPerusahaan_shouldGetAnError() {
+        Header header = new Header();
+        header.setIdHeader(UUID.randomUUID().toString());
+        header.setKodeDokumen("20");
+
+        headerCommandService.createDocumentHeader(header).as(StepVerifier::create)
+                .expectErrorMessage("\"idPerusahaan\" cannot be empty!")
+                .verify();
+    }
+
+    @Test
+    void createDocumentHeader_noGivenIdPerusahaan_shouldGetADataIntegrityException() {
+        Header header = new Header();
+        header.setIdHeader(UUID.randomUUID().toString());
+        header.setKodeDokumen("20");
+
+        headerCommandService.createDocumentHeader(header).as(StepVerifier::create)
+                .expectError(DataIntegrityViolationException.class)
+                .verify();
+    }
+
+    @Test
+    void updateDocumentHeader_existingHeaderId_recordIsUpdated() {
         var idHeader = UUID.randomUUID().toString();
 
         Header currentHeader = spy(new Header());
@@ -98,7 +141,7 @@ class HeaderCommandServiceImplTest {
     }
 
     @Test
-    void updateDocumentHeader_notFound() {
+    void updateDocumentHeader_headerIdNotFound_noRecordIsUpdated() {
         var idHeader = UUID.randomUUID().toString();
 
         Header currentHeader = spy(new Header());
@@ -116,6 +159,8 @@ class HeaderCommandServiceImplTest {
         when(headerCommandRepositoryMock.findById(idHeader)).thenReturn(Mono.empty());
 
         var updateResponse = headerCommandService.updateDocumentHeader(updatedHeader, idHeader).log();
+
+        verify(headerCommandRepositoryMock, never()).save(isA(Header.class));
 
         StepVerifier.create(updateResponse)
                 .expectNextCount(0L)
