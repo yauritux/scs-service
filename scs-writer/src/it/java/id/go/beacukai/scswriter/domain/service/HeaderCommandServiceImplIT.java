@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ActiveProfiles({ "test" })
 @Import(TestContainerConfiguration.class)
-class HeaderCommandServiceImplIntTest {
+class HeaderCommandServiceImplIT {
 
     @Container
     static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:14");

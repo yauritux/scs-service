@@ -27,7 +27,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @ActiveProfiles({"test"})
 @Import(TestContainerConfiguration.class)
-class HeaderCommandRepositoryIntTest {
+class HeaderCommandRepositoryIT {
 
     @Container
     static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:14");

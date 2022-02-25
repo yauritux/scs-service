@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Import(TestContainerConfiguration.class)
 @AutoConfigureWebTestClient
-class HeaderCommandControllerIntTest {
+class HeaderCommandControllerIT {
 
     @Container
     static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:14");
