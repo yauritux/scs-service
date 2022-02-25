@@ -187,6 +187,20 @@ You'll get a response more or less as follow:
 }
 ```
 
+### Create a new Document Header
+
+```
+curl -X PUT -H "Content-Type: application/json" -d '{"jumlahKontainer": 100, "jumlahNilaiBarang": 95000000.00, "lokasiAsal": "Singapore", "lokasiTujuan": "Jakarta"}' localhost:8080/v2/headers/6591df5f-be4e-4424-8338-8ab83eab0b5b
+```
+
+You'll get a response more or less as follow:
+
+`HTTP STATUS: 200 (OK)` (i.e. if idHeader is an existing record in the database)
+
+OR
+
+`HTTP STATUS: 404 (NOT FOUND)` (i.e. if idHeader is not found in the database)
+
 ## Execute All Unit Tests + Integration Tests
 
 1. `cd` into the root project directory
