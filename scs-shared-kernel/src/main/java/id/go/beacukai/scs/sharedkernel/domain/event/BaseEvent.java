@@ -68,7 +68,7 @@ public class BaseEvent {
 
     @Override
     public String toString() {
-        return String.format("%s, eventId = %s, eventHandler = %s, timestamp=%s%n",
+        return String.format("%s, eventId = %s, eventHandler = %s, timestamp = %s",
                 this.getEventType(), this.getEventId(), this.getEventHandler(), this.getTimestamp());
     }
 
