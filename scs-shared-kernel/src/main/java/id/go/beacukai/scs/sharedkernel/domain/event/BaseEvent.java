@@ -1,7 +1,10 @@
 package id.go.beacukai.scs.sharedkernel.domain.event;
 
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
+@Getter
 public class BaseEvent {
     private String eventId;
     private String eventType;
@@ -40,30 +43,6 @@ public class BaseEvent {
     public BaseEvent(final String id, final String createdBy, boolean isSimpleEventName) {
         this(id, isSimpleEventName);
         this.createdBy = createdBy;
-    }
-
-    public String getEventId() {
-        return eventId;
-    }
-
-    public String getEventType() {
-        return eventType;
-    }
-
-    public String getEventHandler() {
-        return eventHandler;
-    }
-
-    public String getEventReferenceId() {
-        return eventReferenceId;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
     }
 
     @Override
