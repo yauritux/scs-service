@@ -10,7 +10,7 @@
     </parent>
     <groupId>id.go.beacukai</groupId>
     <artifactId>scs-writer</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>scs-writer</name>
     <description>scs-writer</description>
     <properties>
