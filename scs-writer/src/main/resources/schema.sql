@@ -152,4 +152,14 @@ CREATE TABLE IF NOT EXISTS header(
     volume double precision
 );
 
-ALTER TABLE header add primary key(id_header);
+ALTER TABLE header ADD PRIMARY KEY(id_header);
+
+CREATE TABLE IF NOT EXISTS domain_events(
+    event_id varchar(255) NOT NULL PRIMARY KEY,
+    event_type varchar(255) NOT NULL,
+    event_handler varchar(500) NOT NULL,
+    event_reference_id varchar(255),
+    data jsonb NOT NULL,
+    timestamp timestamp NOT NULL DEFAULT now(),
+    created_by varchar(25)
+);
