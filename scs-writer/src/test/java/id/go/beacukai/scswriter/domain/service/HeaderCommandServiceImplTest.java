@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -17,8 +18,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
@@ -28,11 +29,14 @@ class HeaderCommandServiceImplTest {
     @Mock
     private HeaderCommandRepository headerCommandRepositoryMock;
 
+    @Mock
+    private TransactionalOperator operatorMock;
+
     private HeaderCommandServiceImpl headerCommandService;
 
     @BeforeEach
     void setUp() {
-        headerCommandService = new HeaderCommandServiceImpl(headerCommandRepositoryMock);
+        headerCommandService = new HeaderCommandServiceImpl(headerCommandRepositoryMock, operatorMock);
     }
 
     @AfterEach
@@ -52,6 +56,7 @@ class HeaderCommandServiceImplTest {
         when(headerCommandRepositoryMock.countByIdPerusahaan(header.getIdPerusahaan()))
                 .thenReturn(Mono.just(1L));
         when(headerCommandRepositoryMock.save(isA(Header.class))).thenReturn(Mono.just(header));
+        when(operatorMock.transactional(any(Mono.class))).thenReturn(Mono.just(header));
 
         var currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
