@@ -1,5 +1,6 @@
 package id.go.beacukai.scswriter.infrastructure.adapter.web.controller;
 
+import id.go.beacukai.scs.sharedkernel.domain.event.HeaderCreatedEvent;
 import id.go.beacukai.scswriter.domain.entity.Header;
 import id.go.beacukai.scswriter.domain.service.HeaderCommandServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -44,16 +45,28 @@ class HeaderCommandControllerTest {
         newDocumentHeader.setNamaPpjk("");
         newDocumentHeader.setNomorAju(nomorAju);
 
-        when(headerCommandServiceMock.createDocumentHeader(isA(Header.class))).thenReturn(Mono.just(newDocumentHeader));
+        var headerCreatedEvent = new HeaderCreatedEvent(UUID.randomUUID().toString());
+        var eventPayload = headerCreatedEvent.new Payload(newDocumentHeader.getIdHeader(),
+                newDocumentHeader.getKodeDokumen(), newDocumentHeader.getNomorAju());
+        eventPayload.setIdPerusahaan(newDocumentHeader.getIdPerusahaan());
+        eventPayload.setNamaPerusahaan(newDocumentHeader.getNamaPerusahaan());
+        eventPayload.setAsalData(newDocumentHeader.getAsalData());
+        eventPayload.setJumlahKontainer(newDocumentHeader.getJumlahKontainer());
+        eventPayload.setRoleEntitas(newDocumentHeader.getRoleEntitas());
+        eventPayload.setSeri(newDocumentHeader.getSeri());
+        eventPayload.setUserPortal(newDocumentHeader.getUserPortal());
+        headerCreatedEvent.setData(eventPayload);
+
+        when(headerCommandServiceMock.createDocumentHeader(isA(Header.class))).thenReturn(Mono.just(headerCreatedEvent));
 
         var response = headerCommandController.createNewHeader(newDocumentHeader);
 
         StepVerifier.create(response)
-                .consumeNextWith(header -> {
-                    assertNotNull(header);
-                    assertEquals(nomorAju, header.getNomorAju());
-                    assertEquals("W", header.getAsalData());
-                    assertEquals("IMPORTIR", header.getRoleEntitas());
+                .consumeNextWith(event -> {
+                    assertNotNull(event);
+                    assertEquals(nomorAju, event.getData().getNomorAju());
+                    assertEquals("W", event.getData().getAsalData());
+                    assertEquals("IMPORTIR", event.getData().getRoleEntitas());
                 })
                 .verifyComplete();
     }

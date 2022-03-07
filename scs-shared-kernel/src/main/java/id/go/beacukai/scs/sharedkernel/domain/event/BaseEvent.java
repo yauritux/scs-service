@@ -1,17 +1,19 @@
 package id.go.beacukai.scs.sharedkernel.domain.event;
 
 import lombok.Getter;
+import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 
 @Getter
 public class BaseEvent {
-    private String eventId;
-    private String eventType;
-    private String eventHandler;
-    private String eventReferenceId;
-    private LocalDateTime timestamp;
-    private String createdBy;
+    @Id
+    protected String eventId;
+    protected String eventType;
+    protected String eventHandler;
+    protected String eventReferenceId;
+    protected LocalDateTime timestamp;
+    protected String createdBy;
 
     public BaseEvent(final String id) {
         this.eventId = id;

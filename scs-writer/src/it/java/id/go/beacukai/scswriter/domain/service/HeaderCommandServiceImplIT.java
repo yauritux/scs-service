@@ -75,12 +75,12 @@ class HeaderCommandServiceImplIT {
         var createdHeader = headerCommandService.createDocumentHeader(header).log();
 
         StepVerifier.create(createdHeader)
-                .consumeNextWith(newHeader -> {
-                    assertThat(newHeader).isNotNull();
-                    assertThat(newHeader.getIdHeader()).isNotNull();
-                    assertThat(newHeader.getIdHeader()).isInstanceOf(String.class);
-                    assertThat(newHeader.getNomorAju()).isNotNull();
-                    assertThat(newHeader.getNomorAju()).isEqualTo("000020123456" + currentDate + "000001");
+                .consumeNextWith(event -> {
+                    assertThat(event).isNotNull();
+                    assertThat(event.getData().getIdHeader()).isNotNull();
+                    assertThat(event.getData().getIdHeader()).isInstanceOf(String.class);
+                    assertThat(event.getData().getNomorAju()).isNotNull();
+                    assertThat(event.getData().getNomorAju()).isEqualTo("000020123456" + currentDate + "000001");
                 })
                 .verifyComplete();
     }
@@ -93,10 +93,10 @@ class HeaderCommandServiceImplIT {
         var secondCreatedHeader = headerCommandService.createDocumentHeader(header).log();
 
         StepVerifier.create(secondCreatedHeader)
-                .consumeNextWith(newSecondHeader -> {
-                    assertThat(newSecondHeader).isNotNull();
-                    assertThat(newSecondHeader.getIdHeader()).isNotNull();
-                    assertThat(newSecondHeader.getNomorAju()).isEqualTo("000020123456" + currentDate + "000002");
+                .consumeNextWith(event -> {
+                    assertThat(event).isNotNull();
+                    assertThat(event.getData().getIdHeader()).isNotNull();
+                    assertThat(event.getData().getNomorAju()).isEqualTo("000020123456" + currentDate + "000002");
                 })
                 .verifyComplete();
     }
@@ -109,9 +109,9 @@ class HeaderCommandServiceImplIT {
         header.setIdPerusahaan("555777999");
 
         headerCommandService.createDocumentHeader(header).as(StepVerifier::create)
-                .consumeNextWith(newThirdHeader -> {
-                    assertThat(newThirdHeader).isNotNull();
-                    assertThat(newThirdHeader.getNomorAju()).isEqualTo("000020555777" + currentDate + "000001");
+                .consumeNextWith(event -> {
+                    assertThat(event).isNotNull();
+                    assertThat(event.getData().getNomorAju()).isEqualTo("000020555777" + currentDate + "000001");
                 })
                 .verifyComplete();
     }
@@ -183,28 +183,28 @@ class HeaderCommandServiceImplIT {
     @Test
     @Order(10)
     void updateHeader_recordIsUpdated() {
-        var createdHeader = headerCommandService.createDocumentHeader(header).block();
+        var event = headerCommandService.createDocumentHeader(header).block();
 
         var updatedHeader = new Header();
-        updatedHeader.setIdHeader(createdHeader.getIdHeader());
-        updatedHeader.setNomorAju(createdHeader.getNomorAju());
-        updatedHeader.setKodeDokumen(createdHeader.getKodeDokumen());
-        updatedHeader.setAsalData(createdHeader.getAsalData());
-        updatedHeader.setIdPerusahaan(createdHeader.getIdPerusahaan());
-        updatedHeader.setNamaPerusahaan(createdHeader.getNamaPerusahaan());
-        updatedHeader.setRoleEntitas(createdHeader.getRoleEntitas());
+        updatedHeader.setIdHeader(event.getData().getIdHeader());
+        updatedHeader.setNomorAju(event.getData().getNomorAju());
+        updatedHeader.setKodeDokumen(event.getData().getKodeDokumen());
+        updatedHeader.setAsalData(event.getData().getAsalData());
+        updatedHeader.setIdPerusahaan(event.getData().getIdPerusahaan());
+        updatedHeader.setNamaPerusahaan(event.getData().getNamaPerusahaan());
+        updatedHeader.setRoleEntitas(event.getData().getRoleEntitas());
 
         // update some fields
         updatedHeader.setJumlahVolume(25_750.50);
         updatedHeader.setJumlahKontainer(100);
         updatedHeader.setJumlahNilaiBarang(BigDecimal.valueOf(10_000_000));
 
-        var response = headerCommandService.updateDocumentHeader(updatedHeader, createdHeader.getIdHeader()).log();
+        var response = headerCommandService.updateDocumentHeader(updatedHeader, event.getData().getIdHeader()).log();
 
         StepVerifier.create(response)
                 .consumeNextWith(header1 -> {
-                    assertThat(header1.getIdHeader()).isEqualTo(createdHeader.getIdHeader());
-                    assertThat(header1.getNomorAju()).isEqualTo(createdHeader.getNomorAju());
+                    assertThat(header1.getIdHeader()).isEqualTo(event.getData().getIdHeader());
+                    assertThat(header1.getNomorAju()).isEqualTo(event.getData().getNomorAju());
                     assertThat(header1.getAsalData()).isEqualTo(header.getAsalData());
                     assertThat(header1.getIdPerusahaan()).isEqualTo(header.getIdPerusahaan());
                     assertThat(header1.getRoleEntitas()).isEqualTo(header.getRoleEntitas());

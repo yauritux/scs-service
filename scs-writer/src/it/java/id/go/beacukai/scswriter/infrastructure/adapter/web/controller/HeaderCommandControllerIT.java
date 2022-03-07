@@ -122,9 +122,16 @@ class HeaderCommandControllerIT {
         header.setRoleEntitas("IMPORTIR");
         header.setAsalData("W");
 
-        var createdHeader = headerCommandService.createDocumentHeader(header).block();
+        var event = headerCommandService.createDocumentHeader(header).block();
 
-        var updatedHeader = createdHeader;
+        var updatedHeader = new Header();
+        updatedHeader.setIdHeader(event.getData().getIdHeader());
+        updatedHeader.setNomorAju(event.getData().getNomorAju());
+        updatedHeader.setAsalData(event.getData().getAsalData());
+        updatedHeader.setKodeDokumen(event.getData().getKodeDokumen());
+        updatedHeader.setIdPerusahaan(event.getData().getIdPerusahaan());
+        updatedHeader.setNamaPerusahaan(event.getData().getNamaPerusahaan());
+        updatedHeader.setRoleEntitas(event.getData().getRoleEntitas());
         updatedHeader.setJumlahNilaiBarang(BigDecimal.valueOf(95_000_000));
         updatedHeader.setLokasiAsal("Singapore");
         updatedHeader.setLokasiTujuan("Jakarta");
@@ -141,7 +148,7 @@ class HeaderCommandControllerIT {
                 .consumeWith(headerEntityExchangeResult -> {
                     var responseBody = headerEntityExchangeResult.getResponseBody();
                     assertThat(responseBody).isNotNull();
-                    assertThat(responseBody.getIdHeader()).isEqualTo(createdHeader.getIdHeader());
+                    assertThat(responseBody.getIdHeader()).isEqualTo(updatedHeader.getIdHeader());
                     assertThat(responseBody.getJumlahNilaiBarang()).isEqualTo(updatedHeader.getJumlahNilaiBarang());
                     assertThat(responseBody.getLokasiAsal()).isEqualTo(updatedHeader.getLokasiAsal());
                     assertThat(responseBody.getLokasiTujuan()).isEqualTo(updatedHeader.getLokasiTujuan());

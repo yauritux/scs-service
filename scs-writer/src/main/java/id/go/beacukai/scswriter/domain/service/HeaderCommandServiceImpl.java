@@ -3,6 +3,7 @@ package id.go.beacukai.scswriter.domain.service;
 import id.go.beacukai.scs.sharedkernel.domain.event.HeaderCreatedEvent;
 import id.go.beacukai.scswriter.application.port.incoming.HeaderCommandService;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCommandRepository;
+import id.go.beacukai.scswriter.application.port.outgoing.HeaderCreatedEventRepository;
 import id.go.beacukai.scswriter.domain.entity.Header;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -11,33 +12,35 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @Service
 public class HeaderCommandServiceImpl implements HeaderCommandService {
 
     private final HeaderCommandRepository headerCommandRepository;
+    private final HeaderCreatedEventRepository headerCreatedEventRepository;
     private final TransactionalOperator operator;
 
-    public HeaderCommandServiceImpl(HeaderCommandRepository headerCommandRepository, TransactionalOperator operator) {
+    public HeaderCommandServiceImpl(
+            HeaderCommandRepository headerCommandRepository, HeaderCreatedEventRepository headerCreatedEventRepository,
+            TransactionalOperator operator) {
         this.headerCommandRepository = headerCommandRepository;
+        this.headerCreatedEventRepository = headerCreatedEventRepository;
         this.operator = operator;
     }
 
     @Override
-    public Mono<Header> createDocumentHeader(Header header) {
+    public Mono<HeaderCreatedEvent> createDocumentHeader(Header header) {
         try {
             header.setNomorAju(newNomorAju(header.getKodeDokumen(), header.getIdPerusahaan()));
-            var headerCreatedEvent = new HeaderCreatedEvent(UUID.randomUUID().toString());
-            var eventPayload = headerCreatedEvent.new Payload(header.getIdHeader(), header.getKodeDokumen(), header.getNomorAju());
-            eventPayload.setIdPerusahaan(header.getIdPerusahaan());
-            eventPayload.setNamaPerusahaan(header.getNamaPerusahaan());
-            headerCreatedEvent.setData(eventPayload);
+            return headerCommandRepository.save(header).thenReturn(header.toEvent())
+                    .flatMap(headerCreatedEventRepository::save)
+                    .doOnError(System.out::println).as(operator::transactional);
         } catch (DataIntegrityViolationException | ExecutionException | InterruptedException e) {
             return Mono.error(e);
+        } catch (Exception e) {
+            return Mono.error(e);
         }
-        return headerCommandRepository.save(header).thenReturn(header).doOnError(System.out::println).as(operator::transactional);
     }
 
     @Override
