@@ -3,12 +3,12 @@ package id.go.beacukai.scswriter.infrastructure.adapter.web.controller;
 import id.go.beacukai.scswriter.application.port.incoming.HeaderCommandService;
 import id.go.beacukai.scswriter.config.TestContainerConfiguration;
 import id.go.beacukai.scswriter.domain.entity.Header;
+import id.go.beacukai.scswriter.infrastructure.adapter.web.dto.HeaderCreatedEventResponseModel;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -22,7 +22,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({ "test" })
@@ -78,14 +77,15 @@ class HeaderCommandControllerIT {
                 .exchange()
                 .expectStatus()
                 .isCreated()
-                .expectBody(Header.class)
+                .expectBody(HeaderCreatedEventResponseModel.class)
                 .consumeWith(headerEntityExchangeResult -> {
                     var responseBody = headerEntityExchangeResult.getResponseBody();
                     assertThat(responseBody).isNotNull();
-                    assertThat(responseBody.getIdHeader()).isNotNull();
-                    assertThat(responseBody.getIdHeader()).isInstanceOf(String.class);
-                    assertThat(responseBody.getNomorAju()).isNotNull();
-                    assertThat(responseBody.getNomorAju()).isEqualTo("000020123456" + currentDate + "000001");
+                    assertThat(responseBody.getData()).isNotNull();
+                    assertThat(responseBody.getData().getIdHeader()).isNotNull();
+                    assertThat(responseBody.getData().getIdHeader()).isInstanceOf(String.class);
+                    assertThat(responseBody.getData().getNomorAju()).isNotNull();
+                    assertThat(responseBody.getData().getNomorAju()).isEqualTo("000020123456" + currentDate + "000001");
                 });
     }
 

@@ -99,6 +99,7 @@ class HeaderCommandRepositoryIT {
     @Test
     void saveForUpdate_forNonExistedRecord_shouldGetAnError() {
         var updatedHeader = new Header();
+        updatedHeader.setIsNew(false);
         updatedHeader.setIdHeader("ABC");
         updatedHeader.setKodeDokumen("20");
         updatedHeader.setAsalData("W");

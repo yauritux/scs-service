@@ -234,6 +234,10 @@ public class Header implements Persistable<String> {
         return headerCreatedEvent;
     }
 
+    public void setIsNew(boolean isNew) {
+        this.isNew = isNew;
+    }
+
     @Override
     public String getId() {
         return idHeader;

@@ -1,8 +1,8 @@
 package id.go.beacukai.scswriter.infrastructure.adapter.web.controller;
 
-import id.go.beacukai.scs.sharedkernel.domain.event.HeaderCreatedEvent;
 import id.go.beacukai.scswriter.application.port.incoming.HeaderCommandService;
 import id.go.beacukai.scswriter.domain.entity.Header;
+import id.go.beacukai.scswriter.infrastructure.adapter.web.dto.HeaderCreatedEventResponseModel;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -55,15 +55,11 @@ public class HeaderCommandControllerWebClientTest {
                 .exchange()
                 .expectStatus()
                 .isCreated()
-                .expectBody(HeaderCreatedEvent.class)
+                .expectBody(HeaderCreatedEventResponseModel.class)
                 .value(event -> {
-                    System.out.println("event = " + event);
                     assertNotNull(event);
+                    assertNotNull(event.getData());
                 });
-//                .consumeWith(headerEntityExchangeResult -> {
-//                    assertEquals(newDocumentHeader.getIdHeader(), responseBody.getData().getIdHeader());
-//                    assertEquals(newDocumentHeader.getNomorAju(), responseBody.getData().getNomorAju());
-//                });
     }
 
     @Test
