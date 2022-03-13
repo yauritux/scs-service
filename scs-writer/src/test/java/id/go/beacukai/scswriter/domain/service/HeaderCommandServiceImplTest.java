@@ -59,8 +59,8 @@ class HeaderCommandServiceImplTest {
 
         when(headerCommandRepositoryMock.countByIdPerusahaan(header.getIdPerusahaan()))
                 .thenReturn(Mono.just(1L));
-        when(headerCommandRepositoryMock.save(isA(Header.class))).thenReturn(Mono.just(header));
-//        when(headerCreatedEventRepositoryMock.save(any(HeaderCreatedEvent.class))).thenReturn(Mono.just(header.toEvent()));
+        when(headerCommandRepositoryMock.save(
+                isA(Header.class))).thenReturn(Mono.just(header));
         when(operatorMock.transactional(any(Mono.class))).thenReturn(Mono.just(header.toEvent()));
 
         var currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -71,6 +71,7 @@ class HeaderCommandServiceImplTest {
                 .consumeNextWith(event -> {
                     assert event != null;
                     assert event.getData().getIdHeader() != null;
+                    assertEquals(event.getData().getIdHeader(), header.getIdHeader());
                     assertEquals(event.getData().getIdHeader(), header.toEvent().getData().getIdHeader());
                     assertTrue(event.getData().getIdHeader() instanceof String);
                     assert header.toEvent().getData().getNomorAju() != null;

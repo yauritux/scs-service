@@ -5,6 +5,7 @@ import id.go.beacukai.scswriter.application.port.incoming.HeaderCommandService;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCommandRepository;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCreatedEventRepository;
 import id.go.beacukai.scswriter.domain.entity.Header;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.reactive.TransactionalOperator;
@@ -12,8 +13,10 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
+@Slf4j
 @Service
 public class HeaderCommandServiceImpl implements HeaderCommandService {
 
@@ -32,6 +35,9 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
     @Override
     public Mono<HeaderCreatedEvent> createDocumentHeader(Header header) {
         try {
+            if (header.isNew() && header.getIdHeader() == null) {
+                header.setIdHeader(UUID.randomUUID().toString());
+            }
             header.setNomorAju(newNomorAju(header.getKodeDokumen(), header.getIdPerusahaan()));
             return headerCommandRepository.save(header).thenReturn(header.toEvent())
                     .flatMap(headerCreatedEventRepository::save)

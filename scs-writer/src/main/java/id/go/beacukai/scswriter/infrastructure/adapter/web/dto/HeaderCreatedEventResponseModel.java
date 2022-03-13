@@ -20,13 +20,12 @@ public class HeaderCreatedEventResponseModel {
     private String createdBy;
 
     public HeaderCreatedEventResponseModel(HeaderCreatedEvent event) {
-        var response = new HeaderCreatedEventResponseModel();
-        response.setEventId(event.getEventId());
-        response.setEventType(event.getEventType());
-        response.setEventHandler(event.getEventHandler());
-        response.setEventReferenceId(event.getEventReferenceId());
-        response.setData(new HeaderPayloadResponseModel(event.getData()));
-        response.setTimestamp(event.getTimestamp());
-        response.setCreatedBy(event.getCreatedBy());
+        this.eventId = event.getEventId();
+        this.eventType = event.getEventType();
+        this.eventHandler = event.getEventHandler();
+        this.eventReferenceId = event.getEventReferenceId();
+        this.data = new HeaderPayloadResponseModel(event.getData());
+        this.timestamp = event.getTimestamp();
+        this.createdBy = event.getCreatedBy();
     }
 }

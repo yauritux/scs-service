@@ -46,7 +46,9 @@ class HeaderCommandControllerTest {
         newDocumentHeader.setNomorAju(nomorAju);
 
         var headerCreatedEvent = new HeaderCreatedEvent(UUID.randomUUID().toString());
-        var eventPayload = headerCreatedEvent.new Payload(newDocumentHeader.getIdHeader(),
+//        var eventPayload = headerCreatedEvent.new Payload(newDocumentHeader.getIdHeader(),
+//                newDocumentHeader.getKodeDokumen(), newDocumentHeader.getNomorAju());
+        var eventPayload = new HeaderCreatedEvent.Payload(newDocumentHeader.getIdHeader(),
                 newDocumentHeader.getKodeDokumen(), newDocumentHeader.getNomorAju());
         eventPayload.setIdPerusahaan(newDocumentHeader.getIdPerusahaan());
         eventPayload.setNamaPerusahaan(newDocumentHeader.getNamaPerusahaan());
