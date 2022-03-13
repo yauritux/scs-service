@@ -1,18 +1,22 @@
 package id.go.beacukai.scs.sharedkernel.domain.event;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.data.relational.core.mapping.Table;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Table(value = "domain_events")
 @Getter
 @Setter
 public class HeaderCreatedEvent extends BaseEvent {
 
     private Payload data;
+
+    public HeaderCreatedEvent() {
+        super();
+    }
 
     public HeaderCreatedEvent(String id) {
         super(id);
@@ -27,7 +31,8 @@ public class HeaderCreatedEvent extends BaseEvent {
     @Setter
     @ToString(onlyExplicitlyIncluded = true)
     @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-    public class Payload {
+    @NoArgsConstructor
+    public static class Payload implements Serializable {
         @ToString.Include
         @EqualsAndHashCode.Include
         private String idHeader;
