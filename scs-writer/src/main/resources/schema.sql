@@ -155,11 +155,14 @@ CREATE TABLE IF NOT EXISTS header(
 ALTER TABLE header ADD PRIMARY KEY(id_header);
 
 CREATE TABLE IF NOT EXISTS domain_events(
-    event_id varchar(255) NOT NULL PRIMARY KEY,
+    event_id varchar(255) NOT NULL DEFAULT uuid_generate_v4(),
     event_type varchar(255) NOT NULL,
+    version bigint default 0,
     event_handler varchar(500) NOT NULL,
     event_reference_id varchar(255),
-    data jsonb NOT NULL,
+    data text NOT NULL,
     timestamp timestamp NOT NULL DEFAULT now(),
     created_by varchar(25)
 );
+
+ALTER TABLE domain_events ADD PRIMARY KEY(event_id);
