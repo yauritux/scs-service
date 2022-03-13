@@ -2,6 +2,7 @@ package id.go.beacukai.scswriter.domain.service;
 
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCommandRepository;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCreatedEventRepository;
+import id.go.beacukai.scswriter.application.port.outgoing.HeaderUpdatedEventRepository;
 import id.go.beacukai.scswriter.domain.entity.Header;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,13 +35,18 @@ class HeaderCommandServiceImplTest {
     private HeaderCreatedEventRepository headerCreatedEventRepositoryMock;
 
     @Mock
+    private HeaderUpdatedEventRepository headerUpdatedEventRepositoryMock;
+
+    @Mock
     private TransactionalOperator operatorMock;
 
     private HeaderCommandServiceImpl headerCommandService;
 
     @BeforeEach
     void setUp() {
-        headerCommandService = new HeaderCommandServiceImpl(headerCommandRepositoryMock, headerCreatedEventRepositoryMock, operatorMock);
+        headerCommandService = new HeaderCommandServiceImpl(
+                headerCommandRepositoryMock, headerCreatedEventRepositoryMock,
+                headerUpdatedEventRepositoryMock, operatorMock);
     }
 
     @AfterEach
@@ -61,7 +67,7 @@ class HeaderCommandServiceImplTest {
                 .thenReturn(Mono.just(1L));
         when(headerCommandRepositoryMock.save(
                 isA(Header.class))).thenReturn(Mono.just(header));
-        when(operatorMock.transactional(any(Mono.class))).thenReturn(Mono.just(header.toEvent()));
+        when(operatorMock.transactional(any(Mono.class))).thenReturn(Mono.just(header.toCreatedEvent()));
 
         var currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
@@ -72,10 +78,10 @@ class HeaderCommandServiceImplTest {
                     assert event != null;
                     assert event.getData().getIdHeader() != null;
                     assertEquals(event.getData().getIdHeader(), header.getIdHeader());
-                    assertEquals(event.getData().getIdHeader(), header.toEvent().getData().getIdHeader());
+                    assertEquals(event.getData().getIdHeader(), header.toCreatedEvent().getData().getIdHeader());
                     assertTrue(event.getData().getIdHeader() instanceof String);
-                    assert header.toEvent().getData().getNomorAju() != null;
-                    assertEquals("000020123456" + currentDate + "000002", header.toEvent().getData().getNomorAju());
+                    assert header.toCreatedEvent().getData().getNomorAju() != null;
+                    assertEquals("000020123456" + currentDate + "000002", header.toCreatedEvent().getData().getNomorAju());
                 })
                 .verifyComplete();
     }
@@ -147,9 +153,9 @@ class HeaderCommandServiceImplTest {
         headerCommandService.updateDocumentHeader(updatedHeader, idHeader).as(StepVerifier::create)
                 .consumeNextWith(newUpdatedHeader -> {
                     assert newUpdatedHeader != null;
-                    assert newUpdatedHeader.getIdHeader().equals(idHeader);
-                    assert newUpdatedHeader.getJumlahVolume() == 2500.25;
-                    assert newUpdatedHeader.getJumlahNilaiBarang().compareTo(BigDecimal.valueOf(1_000_000)) == 0;
+                    assert newUpdatedHeader.getData().getIdHeader().equals(idHeader);
+                    assert newUpdatedHeader.getData().getJumlahVolume() == 2500.25;
+                    assert newUpdatedHeader.getData().getJumlahNilaiBarang().compareTo(BigDecimal.valueOf(1_000_000)) == 0;
                 })
                 .verifyComplete();
     }

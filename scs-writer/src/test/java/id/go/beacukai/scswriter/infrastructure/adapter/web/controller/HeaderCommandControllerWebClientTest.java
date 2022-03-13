@@ -46,7 +46,7 @@ public class HeaderCommandControllerWebClientTest {
         newDocumentHeader.setNomorAju("00002012345620220220789326");
 
         when(headerCommandServiceMock.createDocumentHeader(any(Header.class)))
-                .thenReturn(Mono.just(newDocumentHeader.toEvent()));
+                .thenReturn(Mono.just(newDocumentHeader.toCreatedEvent()));
 
         webTestClient
                 .post()
@@ -95,7 +95,8 @@ public class HeaderCommandControllerWebClientTest {
         updatedHeader.setRoleEntitas("IMPORTIR");
         updatedHeader.setKodeDokumen("20");
 
-        when(headerCommandServiceMock.updateDocumentHeader(updatedHeader, idHeader)).thenReturn(Mono.just(updatedHeader));
+        when(headerCommandServiceMock.updateDocumentHeader(updatedHeader, idHeader)).thenReturn(
+                Mono.just(updatedHeader.toUpdatedEvent()));
 
         webTestClient
                 .put()

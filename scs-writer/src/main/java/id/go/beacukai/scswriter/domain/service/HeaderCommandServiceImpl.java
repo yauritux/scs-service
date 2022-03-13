@@ -1,9 +1,11 @@
 package id.go.beacukai.scswriter.domain.service;
 
 import id.go.beacukai.scs.sharedkernel.domain.event.HeaderCreatedEvent;
+import id.go.beacukai.scs.sharedkernel.domain.event.HeaderUpdatedEvent;
 import id.go.beacukai.scswriter.application.port.incoming.HeaderCommandService;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCommandRepository;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCreatedEventRepository;
+import id.go.beacukai.scswriter.application.port.outgoing.HeaderUpdatedEventRepository;
 import id.go.beacukai.scswriter.domain.entity.Header;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,13 +24,15 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
 
     private final HeaderCommandRepository headerCommandRepository;
     private final HeaderCreatedEventRepository headerCreatedEventRepository;
+    private final HeaderUpdatedEventRepository headerUpdatedEventRepository;
     private final TransactionalOperator operator;
 
     public HeaderCommandServiceImpl(
             HeaderCommandRepository headerCommandRepository, HeaderCreatedEventRepository headerCreatedEventRepository,
-            TransactionalOperator operator) {
+            HeaderUpdatedEventRepository headerUpdatedEventRepository, TransactionalOperator operator) {
         this.headerCommandRepository = headerCommandRepository;
         this.headerCreatedEventRepository = headerCreatedEventRepository;
+        this.headerUpdatedEventRepository = headerUpdatedEventRepository;
         this.operator = operator;
     }
 
@@ -39,7 +43,7 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
                 header.setIdHeader(UUID.randomUUID().toString());
             }
             header.setNomorAju(newNomorAju(header.getKodeDokumen(), header.getIdPerusahaan()));
-            return headerCommandRepository.save(header).thenReturn(header.toEvent())
+            return headerCommandRepository.save(header).thenReturn(header.toCreatedEvent())
                     .flatMap(headerCreatedEventRepository::save)
                     .doOnError(System.out::println).as(operator::transactional);
         } catch (DataIntegrityViolationException | ExecutionException | InterruptedException e) {
@@ -50,37 +54,94 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
     }
 
     @Override
-    public Mono<Header> updateDocumentHeader(Header updatedHeader, String id) {
+    public Mono<HeaderUpdatedEvent> updateDocumentHeader(Header updatedHeader, String id) {
         return headerCommandRepository.findById(id)
                 .flatMap(currentHeader -> {
-                    currentHeader.setAsuransi(updatedHeader.getAsuransi());
-                    currentHeader.setBiayaPengurang(updatedHeader.getBiayaPengurang());
-                    currentHeader.setBiayaTambahan(updatedHeader.getBiayaTambahan());
-                    currentHeader.setBruto(updatedHeader.getBruto());
-                    currentHeader.setCif(updatedHeader.getCif());
-                    currentHeader.setDasarPengenaanPajak(updatedHeader.getDasarPengenaanPajak());
-                    currentHeader.setDisclaimer(updatedHeader.getDisclaimer());
-                    currentHeader.setEmail(updatedHeader.getEmail());
-                    currentHeader.setFlagCurah(updatedHeader.isFlagCurah());
-                    currentHeader.setFlagMigas(updatedHeader.isFlagMigas());
-                    currentHeader.setFlagPph(updatedHeader.isFlagPph());
-                    currentHeader.setFlagSda(updatedHeader.isFlagSda());
-                    currentHeader.setFlagVd(updatedHeader.isFlagVd());
-                    currentHeader.setFob(updatedHeader.getFob());
-                    currentHeader.setFreight(updatedHeader.getFreight());
-                    currentHeader.setHargaPenyerahan(updatedHeader.getHargaPenyerahan());
-                    currentHeader.setHargaPerolehan(updatedHeader.getHargaPerolehan());
-                    currentHeader.setIdPelmuatAkhir(updatedHeader.getIdPelmuatAkhir());
-                    currentHeader.setIdPengguna(updatedHeader.getIdPengguna());
-                    currentHeader.setJatuhTempoBilling(updatedHeader.getJatuhTempoBilling());
-                    currentHeader.setIdPpjk(updatedHeader.getIdPpjk());
-                    currentHeader.setJabatanTtd(updatedHeader.getJabatanTtd());
-                    currentHeader.setJumlahBruto(updatedHeader.getJumlahBruto());
-                    currentHeader.setJumlahCif(updatedHeader.getJumlahCif());
-                    currentHeader.setJumlahFob(updatedHeader.getJumlahFob());
-                    currentHeader.setJumlahHargaPenyerahan(updatedHeader.getJumlahHargaPenyerahan());
-                    currentHeader.setJumlahKontainer(updatedHeader.getJumlahKontainer());
-                    currentHeader.setJumlahNetto(updatedHeader.getJumlahNetto());
+                    currentHeader.setIsNew(false); // MUST flag as false to direct the R2DBC process for update operation
+                    if (updatedHeader.getAsuransi() != null) {
+                        currentHeader.setAsuransi(updatedHeader.getAsuransi());
+                    }
+                    if (updatedHeader.getBiayaPengurang() != null) {
+                        currentHeader.setBiayaPengurang(updatedHeader.getBiayaPengurang());
+                    }
+                    if (updatedHeader.getBiayaTambahan() != null) {
+                        currentHeader.setBiayaTambahan(updatedHeader.getBiayaTambahan());
+                    }
+                    if (updatedHeader.getBruto() != null) {
+                        currentHeader.setBruto(updatedHeader.getBruto());
+                    }
+                    if (updatedHeader.getCif() != null) {
+                        currentHeader.setCif(updatedHeader.getCif());
+                    }
+                    if (updatedHeader.getDasarPengenaanPajak() != null) {
+                        currentHeader.setDasarPengenaanPajak(updatedHeader.getDasarPengenaanPajak());
+                    }
+                    if (updatedHeader.getDisclaimer() != null) {
+                        currentHeader.setDisclaimer(updatedHeader.getDisclaimer());
+                    }
+                    if (updatedHeader.getEmail() != null) {
+                        currentHeader.setEmail(updatedHeader.getEmail());
+                    }
+                    if (updatedHeader.isFlagCurah() != currentHeader.isFlagCurah()) {
+                        currentHeader.setFlagCurah(updatedHeader.isFlagCurah());
+                    }
+                    if (updatedHeader.isFlagMigas() != currentHeader.isFlagMigas()) {
+                        currentHeader.setFlagMigas(updatedHeader.isFlagMigas());
+                    }
+                    if (updatedHeader.isFlagPph() != currentHeader.isFlagPph()) {
+                        currentHeader.setFlagPph(updatedHeader.isFlagPph());
+                    }
+                    if (updatedHeader.isFlagSda() != currentHeader.isFlagSda()) {
+                        currentHeader.setFlagSda(updatedHeader.isFlagSda());
+                    }
+                    if (updatedHeader.isFlagVd() != currentHeader.isFlagVd()) {
+                        currentHeader.setFlagVd(updatedHeader.isFlagVd());
+                    }
+                    if (updatedHeader.getFob() != null) {
+                        currentHeader.setFob(updatedHeader.getFob());
+                    }
+                    if (updatedHeader.getFreight() != null) {
+                        currentHeader.setFreight(updatedHeader.getFreight());
+                    }
+                    if (updatedHeader.getHargaPenyerahan() != null) {
+                        currentHeader.setHargaPenyerahan(updatedHeader.getHargaPenyerahan());
+                    }
+                    if (updatedHeader.getHargaPerolehan() != null) {
+                        currentHeader.setHargaPerolehan(updatedHeader.getHargaPerolehan());
+                    }
+                    if (updatedHeader.getIdPelmuatAkhir() != null) {
+                        currentHeader.setIdPelmuatAkhir(updatedHeader.getIdPelmuatAkhir());
+                    }
+                    if (updatedHeader.getIdPengguna() != null && !updatedHeader.getIdPengguna().equalsIgnoreCase(currentHeader.getIdPengguna())) {
+                        currentHeader.setIdPengguna(updatedHeader.getIdPengguna());
+                    }
+                    if (updatedHeader.getJatuhTempoBilling() != null) {
+                        currentHeader.setJatuhTempoBilling(updatedHeader.getJatuhTempoBilling());
+                    }
+                    if (updatedHeader.getIdPpjk() != null) {
+                        currentHeader.setIdPpjk(updatedHeader.getIdPpjk());
+                    }
+                    if (updatedHeader.getJabatanTtd() != null) {
+                        currentHeader.setJabatanTtd(updatedHeader.getJabatanTtd());
+                    }
+                    if (updatedHeader.getJumlahBruto() != null) {
+                        currentHeader.setJumlahBruto(updatedHeader.getJumlahBruto());
+                    }
+                    if (updatedHeader.getJumlahCif() != null) {
+                        currentHeader.setJumlahCif(updatedHeader.getJumlahCif());
+                    }
+                    if (updatedHeader.getJumlahFob() != null) {
+                        currentHeader.setJumlahFob(updatedHeader.getJumlahFob());
+                    }
+                    if (updatedHeader.getJumlahHargaPenyerahan() != null) {
+                        currentHeader.setJumlahHargaPenyerahan(updatedHeader.getJumlahHargaPenyerahan());
+                    }
+                    if (updatedHeader.getJumlahKontainer() != null) {
+                        currentHeader.setJumlahKontainer(updatedHeader.getJumlahKontainer());
+                    }
+                    if (updatedHeader.getJumlahNetto() != null) {
+                        currentHeader.setJumlahNetto(updatedHeader.getJumlahNetto());
+                    }
                     currentHeader.setJumlahNilaiBarang(updatedHeader.getJumlahNilaiBarang());
                     currentHeader.setJumlahNilaiVd(updatedHeader.getJumlahNilaiVd());
                     currentHeader.setJumlahTandaPengaman(updatedHeader.getJumlahTandaPengaman());
@@ -114,7 +175,10 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
                     currentHeader.setKodeKantorTujuan(updatedHeader.getKodeKantorTujuan());
                     currentHeader.setLokasiAsal(updatedHeader.getLokasiAsal());
                     currentHeader.setLokasiTujuan(updatedHeader.getLokasiTujuan());
-                    return headerCommandRepository.save(currentHeader);
+                    return headerCommandRepository.save(currentHeader).thenReturn(currentHeader.toUpdatedEvent())
+                            .flatMap(headerUpdatedEventRepository::save)
+                            .doOnError(System.out::println)
+                            .as(operator::transactional);
                 });
     }
 

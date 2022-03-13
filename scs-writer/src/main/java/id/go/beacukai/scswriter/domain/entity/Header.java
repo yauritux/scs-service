@@ -1,6 +1,7 @@
 package id.go.beacukai.scswriter.domain.entity;
 
 import id.go.beacukai.scs.sharedkernel.domain.event.HeaderCreatedEvent;
+import id.go.beacukai.scs.sharedkernel.domain.event.HeaderUpdatedEvent;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -181,7 +182,8 @@ public class Header implements Persistable<String> {
         this.isNew = true;
     }
 
-    public HeaderCreatedEvent toEvent() {
+    // TODO:: find a way to abstracting toCreatedEvent and toUpdatedEvent
+    public HeaderCreatedEvent toCreatedEvent() {
         var headerCreatedEvent = new HeaderCreatedEvent(UUID.randomUUID().toString());
         var eventPayload = new HeaderCreatedEvent.Payload(
                 this.idHeader, this.kodeDokumen, this.nomorAju);
@@ -232,6 +234,59 @@ public class Header implements Persistable<String> {
         eventPayload.setUserPortal(this.userPortal);
         headerCreatedEvent.setData(eventPayload);
         return headerCreatedEvent;
+    }
+
+    public HeaderUpdatedEvent toUpdatedEvent() {
+        var headerUpdatedEvent = new HeaderUpdatedEvent(UUID.randomUUID().toString());
+        var eventPayload = new HeaderUpdatedEvent.Payload(
+                this.idHeader, this.kodeDokumen, this.nomorAju);
+        eventPayload.setIdPerusahaan(this.idPerusahaan);
+        eventPayload.setNamaPerusahaan(this.namaPerusahaan);
+        eventPayload.setRoleEntitas(this.roleEntitas);
+        eventPayload.setAsalData(this.asalData);
+        eventPayload.setJumlahKontainer(this.jumlahKontainer);
+        eventPayload.setVolume(this.volume);
+        eventPayload.setJumlahVolume(this.jumlahVolume);
+        eventPayload.setKodeCaraBayar(this.kodeCaraBayar);
+        eventPayload.setNamaCaraBayar(this.namaCaraBayar);
+        eventPayload.setFreight(this.freight);
+        eventPayload.setKodeIncoterm(this.kodeIncoterm);
+        eventPayload.setNamaIncoterm(this.namaIncoterm);
+        eventPayload.setIdPengguna(this.idPengguna);
+        eventPayload.setAsuransi(this.asuransi);
+        eventPayload.setKodeAsuransi(this.kodeAsuransi);
+        eventPayload.setBiayaPengurang(this.biayaPengurang);
+        eventPayload.setBiayaTambahan(this.biayaTambahan);
+        eventPayload.setNetto(this.netto);
+        eventPayload.setJumlahNetto(this.jumlahNetto);
+        eventPayload.setBruto(this.bruto);
+        eventPayload.setJumlahBruto(this.jumlahBruto);
+        eventPayload.setCif(this.cif);
+        eventPayload.setJumlahCif(this.jumlahCif);
+        eventPayload.setDasarPengenaanPajak(this.dasarPengenaanPajak);
+        eventPayload.setEmail(this.email);
+        eventPayload.setDisclaimer(this.disclaimer);
+        eventPayload.setFlagCurah(this.flagCurah);
+        eventPayload.setFlagMigas(this.flagMigas);
+        eventPayload.setFlagPph(this.flagPph);
+        eventPayload.setFlagSda(this.flagSda);
+        eventPayload.setFlagVd(this.flagVd);
+        eventPayload.setJumlahNilaiVd(this.jumlahNilaiVd);
+        eventPayload.setFob(this.fob);
+        eventPayload.setJumlahFob(this.jumlahFob);
+        eventPayload.setHargaPenyerahan(this.hargaPenyerahan);
+        eventPayload.setJumlahHargaPenyerahan(this.jumlahHargaPenyerahan);
+        eventPayload.setHargaPerolehan(this.hargaPerolehan);
+        eventPayload.setNamaProses(this.namaProses);
+        eventPayload.setIdPpjk(this.idPpjk);
+        eventPayload.setJabatanTtd(this.jabatanTtd);
+        eventPayload.setIdPelmuatAkhir(this.idPelmuatAkhir);
+        eventPayload.setJumlahNilaiBarang(this.jumlahNilaiBarang);
+        eventPayload.setJatuhTempoBilling(this.jatuhTempoBilling);
+        eventPayload.setKodeAsalBarangFtz(this.kodeAsalBarangFtz);
+        eventPayload.setUserPortal(this.userPortal);
+        headerUpdatedEvent.setData(eventPayload);
+        return headerUpdatedEvent;
     }
 
     public void setIsNew(boolean isNew) {

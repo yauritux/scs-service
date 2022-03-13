@@ -1,7 +1,9 @@
 package id.go.beacukai.scswriter.infrastructure.config;
 
 import id.go.beacukai.scswriter.application.port.incoming.converter.HeaderCreatedEventReadConverter;
+import id.go.beacukai.scswriter.application.port.incoming.converter.HeaderUpdatedEventReadConverter;
 import id.go.beacukai.scswriter.application.port.outgoing.converter.HeaderCreatedEventWriteConverter;
+import id.go.beacukai.scswriter.application.port.outgoing.converter.HeaderUpdatedEventWriteConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -19,6 +21,8 @@ public class R2dbcConfiguration {
         List<Converter<?, ?>> converters = new ArrayList<>();
         converters.add(new HeaderCreatedEventReadConverter());
         converters.add(new HeaderCreatedEventWriteConverter());
+        converters.add(new HeaderUpdatedEventReadConverter());
+        converters.add(new HeaderUpdatedEventWriteConverter());
         return R2dbcCustomConversions.of(PostgresDialect.INSTANCE, converters);
     }
 }

@@ -203,14 +203,14 @@ class HeaderCommandServiceImplIT {
 
         StepVerifier.create(response)
                 .consumeNextWith(header1 -> {
-                    assertThat(header1.getIdHeader()).isEqualTo(event.getData().getIdHeader());
-                    assertThat(header1.getNomorAju()).isEqualTo(event.getData().getNomorAju());
-                    assertThat(header1.getAsalData()).isEqualTo(header.getAsalData());
-                    assertThat(header1.getIdPerusahaan()).isEqualTo(header.getIdPerusahaan());
-                    assertThat(header1.getRoleEntitas()).isEqualTo(header.getRoleEntitas());
-                    assertThat(header1.getJumlahVolume()).isEqualTo(updatedHeader.getJumlahVolume());
-                    assertThat(header1.getJumlahKontainer()).isEqualTo(updatedHeader.getJumlahKontainer());
-                    assertThat(header1.getJumlahNilaiBarang()).isEqualTo(updatedHeader.getJumlahNilaiBarang());
+                    assertThat(header1.getData().getIdHeader()).isEqualTo(event.getData().getIdHeader());
+                    assertThat(header1.getData().getNomorAju()).isEqualTo(event.getData().getNomorAju());
+                    assertThat(header1.getData().getAsalData()).isEqualTo(header.getAsalData());
+                    assertThat(header1.getData().getIdPerusahaan()).isEqualTo(header.getIdPerusahaan());
+                    assertThat(header1.getData().getRoleEntitas()).isEqualTo(header.getRoleEntitas());
+                    assertThat(header1.getData().getJumlahVolume()).isEqualTo(updatedHeader.getJumlahVolume());
+                    assertThat(header1.getData().getJumlahKontainer()).isEqualTo(updatedHeader.getJumlahKontainer());
+                    assertThat(header1.getData().getJumlahNilaiBarang()).isEqualTo(updatedHeader.getJumlahNilaiBarang());
                 })
                 .verifyComplete();
     }
