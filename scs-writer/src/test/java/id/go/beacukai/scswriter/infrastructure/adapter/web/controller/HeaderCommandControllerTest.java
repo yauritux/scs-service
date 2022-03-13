@@ -3,6 +3,7 @@ package id.go.beacukai.scswriter.infrastructure.adapter.web.controller;
 import id.go.beacukai.scs.sharedkernel.domain.event.HeaderCreatedEvent;
 import id.go.beacukai.scswriter.domain.entity.Header;
 import id.go.beacukai.scswriter.domain.service.HeaderCommandServiceImpl;
+import id.go.beacukai.scswriter.infrastructure.adapter.web.dto.HeaderCreatedEventResponseModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,8 +14,7 @@ import reactor.test.StepVerifier;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
 
@@ -46,8 +46,6 @@ class HeaderCommandControllerTest {
         newDocumentHeader.setNomorAju(nomorAju);
 
         var headerCreatedEvent = new HeaderCreatedEvent(UUID.randomUUID().toString());
-//        var eventPayload = headerCreatedEvent.new Payload(newDocumentHeader.getIdHeader(),
-//                newDocumentHeader.getKodeDokumen(), newDocumentHeader.getNomorAju());
         var eventPayload = new HeaderCreatedEvent.Payload(newDocumentHeader.getIdHeader(),
                 newDocumentHeader.getKodeDokumen(), newDocumentHeader.getNomorAju());
         eventPayload.setIdPerusahaan(newDocumentHeader.getIdPerusahaan());
@@ -65,6 +63,7 @@ class HeaderCommandControllerTest {
 
         StepVerifier.create(response)
                 .consumeNextWith(event -> {
+                    assertTrue(event instanceof HeaderCreatedEventResponseModel);
                     assertNotNull(event);
                     assertEquals(nomorAju, event.getData().getNomorAju());
                     assertEquals("W", event.getData().getAsalData());
