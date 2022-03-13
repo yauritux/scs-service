@@ -231,6 +231,8 @@ public class Header implements Persistable<String> {
         eventPayload.setJumlahNilaiBarang(this.jumlahNilaiBarang);
         eventPayload.setJatuhTempoBilling(this.jatuhTempoBilling);
         eventPayload.setKodeAsalBarangFtz(this.kodeAsalBarangFtz);
+        eventPayload.setLokasiAsal(this.lokasiAsal);
+        eventPayload.setLokasiTujuan(this.lokasiTujuan);
         eventPayload.setUserPortal(this.userPortal);
         headerCreatedEvent.setData(eventPayload);
         return headerCreatedEvent;
@@ -284,6 +286,8 @@ public class Header implements Persistable<String> {
         eventPayload.setJumlahNilaiBarang(this.jumlahNilaiBarang);
         eventPayload.setJatuhTempoBilling(this.jatuhTempoBilling);
         eventPayload.setKodeAsalBarangFtz(this.kodeAsalBarangFtz);
+        eventPayload.setLokasiAsal(this.lokasiAsal);
+        eventPayload.setLokasiTujuan(this.lokasiTujuan);
         eventPayload.setUserPortal(this.userPortal);
         headerUpdatedEvent.setData(eventPayload);
         return headerUpdatedEvent;

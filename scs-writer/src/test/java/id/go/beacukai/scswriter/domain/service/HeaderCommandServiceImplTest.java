@@ -141,11 +141,15 @@ class HeaderCommandServiceImplTest {
         currentHeader.setNomorAju("00002012345620220224000001");
 
         Header updatedHeader = currentHeader;
+        updatedHeader.setIsNew(false);
         updatedHeader.setJumlahVolume(2500.25);
         updatedHeader.setJumlahNilaiBarang(BigDecimal.valueOf(1_000_000));
 
+        var updatedEvent = updatedHeader.toUpdatedEvent();
+
         when(headerCommandRepositoryMock.findById(idHeader)).thenReturn(Mono.just(currentHeader));
         when(headerCommandRepositoryMock.save(isA(Header.class))).thenReturn(Mono.just(updatedHeader));
+        when(operatorMock.transactional(any(Mono.class))).thenReturn(Mono.just(updatedEvent));
 
         verify(currentHeader, times(1)).setJumlahVolume(2500.25);
         verify(currentHeader, times(1)).setJumlahNilaiBarang(BigDecimal.valueOf(1_000_000));

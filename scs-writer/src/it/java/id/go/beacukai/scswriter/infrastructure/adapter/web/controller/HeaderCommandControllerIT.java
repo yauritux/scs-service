@@ -4,6 +4,7 @@ import id.go.beacukai.scswriter.application.port.incoming.HeaderCommandService;
 import id.go.beacukai.scswriter.config.TestContainerConfiguration;
 import id.go.beacukai.scswriter.domain.entity.Header;
 import id.go.beacukai.scswriter.infrastructure.adapter.web.dto.HeaderCreatedEventResponseModel;
+import id.go.beacukai.scswriter.infrastructure.adapter.web.dto.HeaderUpdatedEventResponseModel;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -20,6 +21,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -115,6 +117,7 @@ class HeaderCommandControllerIT {
     @Order(4)
     void updateHeader_existingHeader_recordIsUpdated() {
         var header = new Header();
+        header.setIdHeader(UUID.randomUUID().toString());
         header.setKodeDokumen("20");
         header.setIdPerusahaan("1234567890");
         header.setNamaPerusahaan("PT. DEMO PORTAL");
@@ -124,8 +127,8 @@ class HeaderCommandControllerIT {
 
         var event = headerCommandService.createDocumentHeader(header).block();
 
-        var updatedHeader = new Header();
-        updatedHeader.setIdHeader(event.getData().getIdHeader());
+        var updatedHeader = header;
+        updatedHeader.setIsNew(false);
         updatedHeader.setNomorAju(event.getData().getNomorAju());
         updatedHeader.setAsalData(event.getData().getAsalData());
         updatedHeader.setKodeDokumen(event.getData().getKodeDokumen());
@@ -144,15 +147,16 @@ class HeaderCommandControllerIT {
                 .exchange()
                 .expectStatus()
                 .is2xxSuccessful()
-                .expectBody(Header.class)
+                .expectBody(HeaderUpdatedEventResponseModel.class)
                 .consumeWith(headerEntityExchangeResult -> {
                     var responseBody = headerEntityExchangeResult.getResponseBody();
                     assertThat(responseBody).isNotNull();
-                    assertThat(responseBody.getIdHeader()).isEqualTo(updatedHeader.getIdHeader());
-                    assertThat(responseBody.getJumlahNilaiBarang()).isEqualTo(updatedHeader.getJumlahNilaiBarang());
-                    assertThat(responseBody.getLokasiAsal()).isEqualTo(updatedHeader.getLokasiAsal());
-                    assertThat(responseBody.getLokasiTujuan()).isEqualTo(updatedHeader.getLokasiTujuan());
-                    assertThat(responseBody.getJumlahKontainer()).isEqualTo(updatedHeader.getJumlahKontainer());
+                    assertThat(responseBody.getData()).isNotNull();
+                    assertThat(responseBody.getData().getIdHeader()).isEqualTo(updatedHeader.getIdHeader());
+                    assertThat(responseBody.getData().getJumlahNilaiBarang()).isEqualTo(updatedHeader.getJumlahNilaiBarang());
+                    assertThat(responseBody.getData().getLokasiAsal()).isEqualTo(updatedHeader.getLokasiAsal());
+                    assertThat(responseBody.getData().getLokasiTujuan()).isEqualTo(updatedHeader.getLokasiTujuan());
+                    assertThat(responseBody.getData().getJumlahKontainer()).isEqualTo(updatedHeader.getJumlahKontainer());
                 });
     }
 

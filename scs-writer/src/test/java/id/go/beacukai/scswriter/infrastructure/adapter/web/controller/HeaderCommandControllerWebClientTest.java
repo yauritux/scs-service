@@ -3,6 +3,7 @@ package id.go.beacukai.scswriter.infrastructure.adapter.web.controller;
 import id.go.beacukai.scswriter.application.port.incoming.HeaderCommandService;
 import id.go.beacukai.scswriter.domain.entity.Header;
 import id.go.beacukai.scswriter.infrastructure.adapter.web.dto.HeaderCreatedEventResponseModel;
+import id.go.beacukai.scswriter.infrastructure.adapter.web.dto.HeaderUpdatedEventResponseModel;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -105,12 +106,12 @@ public class HeaderCommandControllerWebClientTest {
                 .exchange()
                 .expectStatus()
                 .is2xxSuccessful()
-                .expectBody(Header.class)
+                .expectBody(HeaderUpdatedEventResponseModel.class)
                 .consumeWith(headerEntityExchangeResult -> {
                     var responseBody = headerEntityExchangeResult.getResponseBody();
                     assertNotNull(responseBody);
-                    assertEquals(updatedHeader.getIdHeader(), responseBody.getIdHeader());
-                    assertEquals(updatedHeader.getKodeDokumen(), responseBody.getKodeDokumen());
+                    assertEquals(updatedHeader.getIdHeader(), responseBody.getData().getIdHeader());
+                    assertEquals(updatedHeader.getKodeDokumen(), responseBody.getData().getKodeDokumen());
                 });
     }
 
