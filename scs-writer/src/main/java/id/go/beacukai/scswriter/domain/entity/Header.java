@@ -2,8 +2,9 @@ package id.go.beacukai.scswriter.domain.entity;
 
 import id.go.beacukai.scs.sharedkernel.domain.event.HeaderCreatedEvent;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -14,8 +15,10 @@ import java.util.UUID;
 
 @Table(value = "header")
 @Data
-@NoArgsConstructor
-public class Header {
+public class Header implements Persistable<String> {
+
+    @Transient
+    private boolean isNew = false;
 
     @Id
     private String idHeader;
@@ -174,9 +177,13 @@ public class Header {
     private String versiModul;
     private Double volume;
 
+    public Header() {
+        this.isNew = true;
+    }
+
     public HeaderCreatedEvent toEvent() {
         var headerCreatedEvent = new HeaderCreatedEvent(UUID.randomUUID().toString());
-        var eventPayload = headerCreatedEvent.new Payload(
+        var eventPayload = new HeaderCreatedEvent.Payload(
                 this.idHeader, this.kodeDokumen, this.nomorAju);
         eventPayload.setIdPerusahaan(this.idPerusahaan);
         eventPayload.setNamaPerusahaan(this.namaPerusahaan);
@@ -225,5 +232,15 @@ public class Header {
         eventPayload.setUserPortal(this.userPortal);
         headerCreatedEvent.setData(eventPayload);
         return headerCreatedEvent;
+    }
+
+    @Override
+    public String getId() {
+        return idHeader;
+    }
+
+    @Override
+    public boolean isNew() {
+        return isNew;
     }
 }
