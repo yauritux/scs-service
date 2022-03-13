@@ -22,6 +22,22 @@ public class HeaderCreatedEvent extends BaseEvent {
         super(id);
     }
 
+    public void setAggregateId(String aggregateId) {
+        this.aggregateId = aggregateId;
+    }
+
+    public String getAggregateId() {
+        return this.aggregateId;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
+
+    public long getVersion() {
+        return this.version;
+    }
+
     @Override
     public String toString() {
         return String.format("Event[%s], Payload[%s]", super.toString(), this.data.toString());

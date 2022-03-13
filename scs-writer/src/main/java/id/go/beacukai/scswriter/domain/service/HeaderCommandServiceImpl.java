@@ -43,7 +43,10 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
                 header.setIdHeader(UUID.randomUUID().toString());
             }
             header.setNomorAju(newNomorAju(header.getKodeDokumen(), header.getIdPerusahaan()));
-            return headerCommandRepository.save(header).thenReturn(header.toCreatedEvent())
+            var createdEvent = header.toCreatedEvent();
+            createdEvent.setVersion(0);
+            createdEvent.setAggregateId(header.getIdHeader());
+            return headerCommandRepository.save(header).thenReturn(createdEvent)
                     .flatMap(headerCreatedEventRepository::save)
                     .doOnError(System.out::println).as(operator::transactional);
         } catch (DataIntegrityViolationException | ExecutionException | InterruptedException e) {
@@ -179,14 +182,27 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
                     if (updatedHeader.getLokasiTujuan() != null) {
                         currentHeader.setLokasiTujuan(updatedHeader.getLokasiTujuan());
                     }
-                    return headerCommandRepository.save(currentHeader).thenReturn(currentHeader.toUpdatedEvent())
+                    var updatedEvent = currentHeader.toUpdatedEvent();
+                    updatedEvent.setAggregateId(currentHeader.getIdHeader());
+//                    var currentAggregateRecord = headerUpdatedEventRepository
+//                            .findFirstByAggregateIdOrderByTimestampDesc(updatedHeader.getIdHeader()).toFuture();
+//                    try {
+//                        var lastAggregateRecord = currentAggregateRecord.get();
+//                        if (lastAggregateRecord != null) {
+//                            updatedEvent.setVersion(lastAggregateRecord.getVersion() + 1);
+//                        }
+//                    } catch (InterruptedException | ExecutionException e) {
+//                        log.error(e.getMessage());
+//                    }
+                    // TODO set updatedEvent version
+                    return headerCommandRepository.save(currentHeader).thenReturn(updatedEvent)
                             .flatMap(headerUpdatedEventRepository::save)
                             .doOnError(System.out::println)
                             .as(operator::transactional);
                 });
     }
 
-    private final String newNomorAju(String kodeDokumen, String idPerusahaan)
+    private String newNomorAju(String kodeDokumen, String idPerusahaan)
             throws DataIntegrityViolationException, ExecutionException, InterruptedException {
         if (kodeDokumen == null || kodeDokumen.trim().equals("")) {
             throw new DataIntegrityViolationException("\"kodeDokumen\" cannot be empty!");

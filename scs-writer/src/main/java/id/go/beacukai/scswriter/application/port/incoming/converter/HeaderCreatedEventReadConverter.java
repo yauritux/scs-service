@@ -68,6 +68,8 @@ public class HeaderCreatedEventReadConverter implements Converter<Row, HeaderCre
 
         var event = new HeaderCreatedEvent(source.get("event_id", String.class));
         event.setEventType(source.get("event_type", String.class));
+        event.setAggregateId(source.get("aggregate_id", String.class));
+        event.setVersion(source.get("version", Long.class));
         event.setEventHandler(source.get("event_handler", String.class));
         var eventVersion = Optional.ofNullable(source.get("version", Long.class));
         eventVersion.ifPresent(event::setVersion);

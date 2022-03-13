@@ -18,6 +18,7 @@ import reactor.test.StepVerifier;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,6 +56,7 @@ class HeaderCommandServiceImplIT {
     @BeforeEach
     void setUp() {
         header = new Header();
+        header.setIdHeader(UUID.randomUUID().toString());
         header.setKodeDokumen("20");
         header.setAsalData("W");
         header.setIdPerusahaan("1234567890");
@@ -81,6 +83,8 @@ class HeaderCommandServiceImplIT {
                     assertThat(event.getData().getIdHeader()).isInstanceOf(String.class);
                     assertThat(event.getData().getNomorAju()).isNotNull();
                     assertThat(event.getData().getNomorAju()).isEqualTo("000020123456" + currentDate + "000001");
+                    assertThat(event.getAggregateId()).isEqualTo(event.getData().getIdHeader());
+                    assertThat(event.getVersion()).isEqualTo(0l);
                 })
                 .verifyComplete();
     }
@@ -186,6 +190,7 @@ class HeaderCommandServiceImplIT {
         var event = headerCommandService.createDocumentHeader(header).block();
 
         var updatedHeader = new Header();
+        updatedHeader.setIsNew(false);
         updatedHeader.setIdHeader(event.getData().getIdHeader());
         updatedHeader.setNomorAju(event.getData().getNomorAju());
         updatedHeader.setKodeDokumen(event.getData().getKodeDokumen());
@@ -203,6 +208,9 @@ class HeaderCommandServiceImplIT {
 
         StepVerifier.create(response)
                 .consumeNextWith(header1 -> {
+                    assertThat(header1.getAggregateId()).isNotNull();
+                    assertThat(header1.getAggregateId()).isEqualTo(event.getData().getIdHeader());
+                    assertThat(header1.getAggregateId()).isEqualTo(updatedHeader.getIdHeader());
                     assertThat(header1.getData().getIdHeader()).isEqualTo(event.getData().getIdHeader());
                     assertThat(header1.getData().getNomorAju()).isEqualTo(event.getData().getNomorAju());
                     assertThat(header1.getData().getAsalData()).isEqualTo(header.getAsalData());

@@ -19,6 +19,7 @@ public class BaseEvent implements Serializable, Persistable<String> {
     @Id
     protected String eventId;
     protected String eventType;
+    protected String aggregateId;
     protected long version;
     protected String eventHandler;
     protected String eventReferenceId;

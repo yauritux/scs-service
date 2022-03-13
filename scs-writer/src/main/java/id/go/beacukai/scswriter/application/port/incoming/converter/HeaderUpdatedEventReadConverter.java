@@ -1,6 +1,5 @@
 package id.go.beacukai.scswriter.application.port.incoming.converter;
 
-import id.go.beacukai.scs.sharedkernel.domain.event.HeaderCreatedEvent;
 import id.go.beacukai.scs.sharedkernel.domain.event.HeaderUpdatedEvent;
 import io.r2dbc.spi.Row;
 import org.springframework.core.convert.converter.Converter;
@@ -70,6 +69,8 @@ public class HeaderUpdatedEventReadConverter implements Converter<Row, HeaderUpd
 
         var event = new HeaderUpdatedEvent(source.get("event_id", String.class));
         event.setEventType(source.get("event_type", String.class));
+        event.setAggregateId(source.get("aggregate_id", String.class));
+        event.setVersion(source.get("version", Long.class));
         event.setEventHandler(source.get("event_handler", String.class));
         var eventVersion = Optional.ofNullable(source.get("version", Long.class));
         eventVersion.ifPresent(event::setVersion);

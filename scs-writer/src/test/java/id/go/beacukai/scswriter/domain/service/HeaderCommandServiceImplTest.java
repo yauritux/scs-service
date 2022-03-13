@@ -20,8 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
@@ -56,22 +55,26 @@ class HeaderCommandServiceImplTest {
 
     @Test
     void createDocumentHeader_recordIsCreated() {
-        Header header = new Header();
+        Header header = spy(new Header());
         header.setIdHeader(UUID.randomUUID().toString());
         header.setAsalData("W");
         header.setJumlahKontainer(0);
         header.setIdPerusahaan("1234567890");
         header.setKodeDokumen("20");
 
+        var createdEvent = header.toCreatedEvent();
+
         when(headerCommandRepositoryMock.countByIdPerusahaan(header.getIdPerusahaan()))
                 .thenReturn(Mono.just(1L));
         when(headerCommandRepositoryMock.save(
                 isA(Header.class))).thenReturn(Mono.just(header));
-        when(operatorMock.transactional(any(Mono.class))).thenReturn(Mono.just(header.toCreatedEvent()));
+        when(operatorMock.transactional(any(Mono.class))).thenReturn(Mono.just(createdEvent));
 
         var currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
         var response = headerCommandService.createDocumentHeader(header).log();
+
+        verify(header, atLeastOnce()).toCreatedEvent();
 
         StepVerifier.create(response)
                 .consumeNextWith(event -> {

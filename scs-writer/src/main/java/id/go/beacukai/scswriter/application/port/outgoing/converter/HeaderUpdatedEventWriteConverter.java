@@ -14,8 +14,9 @@ public class HeaderUpdatedEventWriteConverter implements Converter<HeaderUpdated
         OutboundRow row = new OutboundRow();
         row.put("event_id", Parameter.from(event.getEventId()));
         row.put("event_type", Parameter.from(event.getEventType()));
-        row.put("event_handler", Parameter.from(event.getEventHandler()));
+        row.put("aggregate_id", Parameter.from(event.getAggregateId()));
         row.put("version", Parameter.from(event.getVersion()));
+        row.put("event_handler", Parameter.from(event.getEventHandler()));
         if (event.getEventReferenceId() != null) {
             row.put("event_reference_id", Parameter.from(event.getEventReferenceId()));
         }
