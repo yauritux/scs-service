@@ -17,7 +17,6 @@ class HeaderCreatedEventTest {
     @BeforeEach
     void setUp() {
         headerCreatedEvent = new HeaderCreatedEvent(eventId);
-//        eventPayload = headerCreatedEvent.new Payload(idHeader, "20", "TESTING");
         eventPayload = new HeaderCreatedEvent.Payload(idHeader, "20", "TESTING");
         headerCreatedEvent.setData(eventPayload);
         eventPayload.setAsalData("W");
