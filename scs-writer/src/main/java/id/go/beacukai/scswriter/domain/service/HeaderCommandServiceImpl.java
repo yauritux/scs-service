@@ -21,7 +21,6 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class HeaderCommandServiceImpl implements HeaderCommandService {
 
-    //TODO:: refactor to use one event's repo for all
     private final HeaderCommandRepository headerCommandRepository;
     private final HeaderBaseEventRepository headerBaseEventRepository;
     private final TransactionalOperator operator;
@@ -143,37 +142,99 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
                     if (updatedHeader.getJumlahNetto() != null) {
                         currentHeader.setJumlahNetto(updatedHeader.getJumlahNetto());
                     }
-                    currentHeader.setJumlahNilaiBarang(updatedHeader.getJumlahNilaiBarang());
-                    currentHeader.setJumlahNilaiVd(updatedHeader.getJumlahNilaiVd());
-                    currentHeader.setJumlahTandaPengaman(updatedHeader.getJumlahTandaPengaman());
-                    currentHeader.setJumlahVolume(updatedHeader.getJumlahVolume());
-                    currentHeader.setKodeAsalBarangFtz(updatedHeader.getKodeAsalBarangFtz());
-                    currentHeader.setKodeAsuransi(updatedHeader.getKodeAsuransi());
-                    currentHeader.setKodeBank(updatedHeader.getKodeBank());
-                    currentHeader.setKodeBilling(updatedHeader.getKodeBilling());
-                    currentHeader.setKodeCaraAngkutPlb(updatedHeader.getKodeCaraAngkutPlb());
-                    currentHeader.setKodeCaraDagang(updatedHeader.getKodeCaraDagang());
-                    currentHeader.setKodeCaraBayar(updatedHeader.getKodeCaraBayar());
-                    currentHeader.setKodeDaerahAsal(updatedHeader.getKodeDaerahAsal());
-                    currentHeader.setKodeFaktur(updatedHeader.getKodeFaktur());
-                    currentHeader.setKodeGudangAsal(updatedHeader.getKodeGudangAsal());
-                    currentHeader.setKodeGudangTujuan(updatedHeader.getKodeGudangTujuan());
-                    currentHeader.setKodeIncoterm(updatedHeader.getKodeIncoterm());
-                    currentHeader.setKodeJenisEkspor(updatedHeader.getKodeJenisEkspor());
-                    currentHeader.setKodeJenisImpor(updatedHeader.getKodeJenisImpor());
-                    currentHeader.setKodeJenisKirim(updatedHeader.getKodeJenisKirim());
-                    currentHeader.setKodeJenisNilai(updatedHeader.getKodeJenisNilai());
-                    currentHeader.setKodeJenisPengiriman(updatedHeader.getKodeJenisPengiriman());
-                    currentHeader.setKodeJenisPlb(updatedHeader.getKodeJenisPlb());
-                    currentHeader.setKodeJenisProsedur(updatedHeader.getKodeJenisProsedur());
-                    currentHeader.setKodeJenisTandaPengaman(updatedHeader.getKodeJenisTandaPengaman());
-                    currentHeader.setKodeJenisTpb(updatedHeader.getKodeJenisTpb());
-                    currentHeader.setKodeKantor(updatedHeader.getKodeKantor());
-                    currentHeader.setKodeKantorBongkar(updatedHeader.getKodeKantorBongkar());
-                    currentHeader.setKodeKantorEkspor(updatedHeader.getKodeKantorEkspor());
-                    currentHeader.setKodeKantorMuat(updatedHeader.getKodeKantorMuat());
-                    currentHeader.setKodeKantorPeriksa(updatedHeader.getKodeKantorPeriksa());
-                    currentHeader.setKodeKantorTujuan(updatedHeader.getKodeKantorTujuan());
+                    if (updatedHeader.getJumlahNilaiBarang() != null) {
+                        currentHeader.setJumlahNilaiBarang(updatedHeader.getJumlahNilaiBarang());
+                    }
+                    if (updatedHeader.getJumlahNilaiVd() != null) {
+                        currentHeader.setJumlahNilaiVd(updatedHeader.getJumlahNilaiVd());
+                    }
+                    if (updatedHeader.getJumlahTandaPengaman() != null) {
+                        currentHeader.setJumlahTandaPengaman(updatedHeader.getJumlahTandaPengaman());
+                    }
+                    if (updatedHeader.getJumlahVolume() != null) {
+                        currentHeader.setJumlahVolume(updatedHeader.getJumlahVolume());
+                    }
+                    if (updatedHeader.getKodeAsalBarangFtz() != null) {
+                        currentHeader.setKodeAsalBarangFtz(updatedHeader.getKodeAsalBarangFtz());
+                    }
+                    if (updatedHeader.getKodeAsuransi() != null) {
+                        currentHeader.setKodeAsuransi(updatedHeader.getKodeAsuransi());
+                    }
+                    if (updatedHeader.getKodeBank() != null) {
+                        currentHeader.setKodeBank(updatedHeader.getKodeBank());
+                    }
+                    if (updatedHeader.getKodeBilling() != null) {
+                        currentHeader.setKodeBilling(updatedHeader.getKodeBilling());
+                    }
+                    if (updatedHeader.getKodeCaraAngkutPlb() != null) {
+                        currentHeader.setKodeCaraAngkutPlb(updatedHeader.getKodeCaraAngkutPlb());
+                    }
+                    if (updatedHeader.getKodeCaraDagang() != null) {
+                        currentHeader.setKodeCaraDagang(updatedHeader.getKodeCaraDagang());
+                    }
+                    if (updatedHeader.getKodeCaraBayar() != null) {
+                        currentHeader.setKodeCaraBayar(updatedHeader.getKodeCaraBayar());
+                    }
+                    if (updatedHeader.getKodeDaerahAsal() != null) {
+                        currentHeader.setKodeDaerahAsal(updatedHeader.getKodeDaerahAsal());
+                    }
+                    if (updatedHeader.getKodeFaktur() != null) {
+                        currentHeader.setKodeFaktur(updatedHeader.getKodeFaktur());
+                    }
+                    if (updatedHeader.getKodeGudangAsal() != null) {
+                        currentHeader.setKodeGudangAsal(updatedHeader.getKodeGudangAsal());
+                    }
+                    if (updatedHeader.getKodeGudangTujuan() != null) {
+                        currentHeader.setKodeGudangTujuan(updatedHeader.getKodeGudangTujuan());
+                    }
+                    if (updatedHeader.getKodeIncoterm() != null) {
+                        currentHeader.setKodeIncoterm(updatedHeader.getKodeIncoterm());
+                    }
+                    if (updatedHeader.getKodeJenisEkspor() != null) {
+                        currentHeader.setKodeJenisEkspor(updatedHeader.getKodeJenisEkspor());
+                    }
+                    if (updatedHeader.getKodeJenisImpor() != null) {
+                        currentHeader.setKodeJenisImpor(updatedHeader.getKodeJenisImpor());
+                    }
+                    if (updatedHeader.getKodeJenisKirim() != null) {
+                        currentHeader.setKodeJenisKirim(updatedHeader.getKodeJenisKirim());
+                    }
+                    if (updatedHeader.getKodeJenisNilai() != null) {
+                        currentHeader.setKodeJenisNilai(updatedHeader.getKodeJenisNilai());
+                    }
+                    if (updatedHeader.getKodeJenisPengiriman() != null) {
+                        currentHeader.setKodeJenisPengiriman(updatedHeader.getKodeJenisPengiriman());
+                    }
+                    if (updatedHeader.getKodeJenisPlb() != null) {
+                        currentHeader.setKodeJenisPlb(updatedHeader.getKodeJenisPlb());
+                    }
+                    if (updatedHeader.getKodeJenisProsedur() != null) {
+                        currentHeader.setKodeJenisProsedur(updatedHeader.getKodeJenisProsedur());
+                    }
+                    if (updatedHeader.getKodeJenisTandaPengaman() != null) {
+                        currentHeader.setKodeJenisTandaPengaman(updatedHeader.getKodeJenisTandaPengaman());
+                    }
+                    if (updatedHeader.getKodeJenisTpb() != null) {
+                        currentHeader.setKodeJenisTpb(updatedHeader.getKodeJenisTpb());
+                    }
+                    if (updatedHeader.getKodeKantor() != null) {
+                        currentHeader.setKodeKantor(updatedHeader.getKodeKantor());
+                    }
+                    if (updatedHeader.getKodeKantorBongkar() != null) {
+                        currentHeader.setKodeKantorBongkar(updatedHeader.getKodeKantorBongkar());
+                    }
+                    if (updatedHeader.getKodeKantorEkspor() != null) {
+                        currentHeader.setKodeKantorEkspor(updatedHeader.getKodeKantorEkspor());
+                    }
+                    if (updatedHeader.getKodeKantorMuat() != null) {
+                        currentHeader.setKodeKantorMuat(updatedHeader.getKodeKantorMuat());
+                    }
+                    if (updatedHeader.getKodeKantorPeriksa() != null) {
+                        currentHeader.setKodeKantorPeriksa(updatedHeader.getKodeKantorPeriksa());
+                    }
+                    if (updatedHeader.getKodeKantorTujuan() != null) {
+                        currentHeader.setKodeKantorTujuan(updatedHeader.getKodeKantorTujuan());
+                    }
                     if (updatedHeader.getLokasiAsal() != null) {
                         currentHeader.setLokasiAsal(updatedHeader.getLokasiAsal());
                     }
