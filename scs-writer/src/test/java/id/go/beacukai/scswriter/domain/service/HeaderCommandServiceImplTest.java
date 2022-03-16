@@ -2,8 +2,6 @@ package id.go.beacukai.scswriter.domain.service;
 
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderBaseEventRepository;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCommandRepository;
-import id.go.beacukai.scswriter.application.port.outgoing.HeaderCreatedEventRepository;
-import id.go.beacukai.scswriter.application.port.outgoing.HeaderUpdatedEventRepository;
 import id.go.beacukai.scswriter.domain.entity.Header;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +19,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
@@ -30,12 +29,6 @@ class HeaderCommandServiceImplTest {
 
     @Mock
     private HeaderCommandRepository headerCommandRepositoryMock;
-
-    @Mock
-    private HeaderCreatedEventRepository headerCreatedEventRepositoryMock;
-
-    @Mock
-    private HeaderUpdatedEventRepository headerUpdatedEventRepositoryMock;
 
     @Mock
     private HeaderBaseEventRepository headerBaseEventRepositoryMock;
@@ -48,8 +41,7 @@ class HeaderCommandServiceImplTest {
     @BeforeEach
     void setUp() {
         headerCommandService = new HeaderCommandServiceImpl(
-                headerCommandRepositoryMock, headerCreatedEventRepositoryMock,
-                headerUpdatedEventRepositoryMock, headerBaseEventRepositoryMock,
+                headerCommandRepositoryMock, headerBaseEventRepositoryMock,
                 operatorMock);
     }
 

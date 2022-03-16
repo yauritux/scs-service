@@ -5,8 +5,6 @@ import id.go.beacukai.scs.sharedkernel.domain.event.HeaderUpdatedEvent;
 import id.go.beacukai.scswriter.application.port.incoming.HeaderCommandService;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderBaseEventRepository;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCommandRepository;
-import id.go.beacukai.scswriter.application.port.outgoing.HeaderCreatedEventRepository;
-import id.go.beacukai.scswriter.application.port.outgoing.HeaderUpdatedEventRepository;
 import id.go.beacukai.scswriter.domain.entity.Header;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,18 +23,13 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
 
     //TODO:: refactor to use one event's repo for all
     private final HeaderCommandRepository headerCommandRepository;
-    private final HeaderCreatedEventRepository headerCreatedEventRepository;
-    private final HeaderUpdatedEventRepository headerUpdatedEventRepository;
     private final HeaderBaseEventRepository headerBaseEventRepository;
     private final TransactionalOperator operator;
 
     public HeaderCommandServiceImpl(
-            HeaderCommandRepository headerCommandRepository, HeaderCreatedEventRepository headerCreatedEventRepository,
-            HeaderUpdatedEventRepository headerUpdatedEventRepository, HeaderBaseEventRepository headerBaseEventRepository,
+            HeaderCommandRepository headerCommandRepository, HeaderBaseEventRepository headerBaseEventRepository,
             TransactionalOperator operator) {
         this.headerCommandRepository = headerCommandRepository;
-        this.headerCreatedEventRepository = headerCreatedEventRepository;
-        this.headerUpdatedEventRepository = headerUpdatedEventRepository;
         this.headerBaseEventRepository = headerBaseEventRepository;
         this.operator = operator;
     }
@@ -52,7 +45,7 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
             createdEvent.setVersion(0);
             createdEvent.setAggregateId(header.getIdHeader());
             return headerCommandRepository.save(header).thenReturn(createdEvent)
-                    .flatMap(headerCreatedEventRepository::save)
+                    .flatMap(headerBaseEventRepository::save)
                     .doOnError(System.out::println).as(operator::transactional);
         } catch (DataIntegrityViolationException | ExecutionException | InterruptedException e) {
             return Mono.error(e);
@@ -193,7 +186,7 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
                     return totalAggregateRecords.flatMap(c -> {
                         updatedEvent.setVersion((c + 1) - 1); // minus 1 as event's version always started from '0'
                         return headerCommandRepository.save(currentHeader).thenReturn(updatedEvent)
-                                .flatMap(headerUpdatedEventRepository::save)
+                                .flatMap(headerBaseEventRepository::save)
                                 .doOnError(System.out::println)
                                 .as(operator::transactional);
                     });
