@@ -1,7 +1,5 @@
 package id.go.beacukai.scswriter.infrastructure.adapter.web.controller;
 
-import id.go.beacukai.scs.sharedkernel.domain.event.HeaderCreatedEvent;
-import id.go.beacukai.scs.sharedkernel.domain.event.HeaderUpdatedEvent;
 import id.go.beacukai.scswriter.application.port.incoming.HeaderCommandService;
 import id.go.beacukai.scswriter.domain.entity.Header;
 import id.go.beacukai.scswriter.infrastructure.adapter.web.dto.HeaderCreatedEventResponseModel;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/v2/headers")
@@ -27,14 +24,14 @@ public class HeaderCommandController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Mono<HeaderCreatedEventResponseModel> createNewHeader(@RequestBody @Valid Header header) {
-        var createdEvent = headerCommandService.createDocumentHeader(header);
-        return createdEvent.map(event -> new HeaderCreatedEventResponseModel(event));
+        return headerCommandService.createDocumentHeader(header)
+                .map(event -> new HeaderCreatedEventResponseModel(event));
     }
 
     @PutMapping("/{id}")
     public Mono<ResponseEntity<HeaderUpdatedEventResponseModel>> updateHeader(@RequestBody Header updatedHeader, @PathVariable String id) {
-        var updatedEvent = headerCommandService.updateDocumentHeader(updatedHeader, id);
-        return updatedEvent.map(event -> ResponseEntity.ok(new HeaderUpdatedEventResponseModel(event)))
+        return headerCommandService.updateDocumentHeader(updatedHeader, id)
+                .map(event -> ResponseEntity.ok(new HeaderUpdatedEventResponseModel(event)))
                 .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 }

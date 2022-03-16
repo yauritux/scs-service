@@ -1,5 +1,6 @@
 package id.go.beacukai.scswriter.domain.service;
 
+import id.go.beacukai.scswriter.application.port.outgoing.HeaderBaseEventRepository;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCommandRepository;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCreatedEventRepository;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderUpdatedEventRepository;
@@ -37,6 +38,9 @@ class HeaderCommandServiceImplTest {
     private HeaderUpdatedEventRepository headerUpdatedEventRepositoryMock;
 
     @Mock
+    private HeaderBaseEventRepository headerBaseEventRepositoryMock;
+
+    @Mock
     private TransactionalOperator operatorMock;
 
     private HeaderCommandServiceImpl headerCommandService;
@@ -45,7 +49,8 @@ class HeaderCommandServiceImplTest {
     void setUp() {
         headerCommandService = new HeaderCommandServiceImpl(
                 headerCommandRepositoryMock, headerCreatedEventRepositoryMock,
-                headerUpdatedEventRepositoryMock, operatorMock);
+                headerUpdatedEventRepositoryMock, headerBaseEventRepositoryMock,
+                operatorMock);
     }
 
     @AfterEach

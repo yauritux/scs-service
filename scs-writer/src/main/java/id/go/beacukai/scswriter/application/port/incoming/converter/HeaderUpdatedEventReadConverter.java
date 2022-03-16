@@ -19,24 +19,24 @@ public class HeaderUpdatedEventReadConverter implements Converter<Row, HeaderUpd
     public HeaderUpdatedEvent convert(Row source) {
         Payload eventPayload = new Payload();
 
-        eventPayload.setIdHeader(source.get("id_header", String.class));
-        eventPayload.setAsalData(source.get("asal_data", String.class));
+        eventPayload.setIdHeader(source.get("idHeader", String.class));
+        eventPayload.setAsalData(source.get("asalData", String.class));
         eventPayload.setAsuransi(source.get("asuransi", BigDecimal.class));
-        eventPayload.setBiayaPengurang(source.get("biaya_pengurang", BigDecimal.class));
-        eventPayload.setBiayaTambahan(source.get("biaya_tambahan", BigDecimal.class));
+        eventPayload.setBiayaPengurang(source.get("biayaPengurang", BigDecimal.class));
+        eventPayload.setBiayaTambahan(source.get("biayaTambahan", BigDecimal.class));
         eventPayload.setBruto(source.get("bruto", BigDecimal.class));
         eventPayload.setCif(source.get("cif", String.class));
-        eventPayload.setDasarPengenaanPajak(source.get("dasar_pengenaan_pajak", String.class));
+        eventPayload.setDasarPengenaanPajak(source.get("dasarPengenaanPajak", String.class));
         eventPayload.setDisclaimer(source.get("disclaimer", String.class));
         eventPayload.setEmail(source.get("email", String.class));
-        eventPayload.setFlagCurah(Boolean.TRUE.equals(source.get("flag_curah", Boolean.class)));
-        eventPayload.setFlagMigas(Boolean.TRUE.equals(source.get("flag_migas", Boolean.class)));
-        eventPayload.setFlagPph(Boolean.TRUE.equals(source.get("flag_pph", Boolean.class)));
-        eventPayload.setFlagSda(Boolean.TRUE.equals(source.get("flag_sda", Boolean.class)));
-        eventPayload.setFlagVd(Boolean.TRUE.equals(source.get("flag_vd", Boolean.class)));
+        eventPayload.setFlagCurah(Boolean.TRUE.equals(source.get("flagCurah", Boolean.class)));
+        eventPayload.setFlagMigas(Boolean.TRUE.equals(source.get("flagMigas", Boolean.class)));
+        eventPayload.setFlagPph(Boolean.TRUE.equals(source.get("flagPph", Boolean.class)));
+        eventPayload.setFlagSda(Boolean.TRUE.equals(source.get("flagSda", Boolean.class)));
+        eventPayload.setFlagVd(Boolean.TRUE.equals(source.get("flagVd", Boolean.class)));
         eventPayload.setFob(source.get("fob", String.class));
         eventPayload.setFreight(source.get("freight", Double.class));
-        eventPayload.setHargaPenyerahan(source.get("harga_penyerahan", BigDecimal.class));
+        eventPayload.setHargaPenyerahan(source.get("hargaPenyerahan", BigDecimal.class));
         eventPayload.setHargaPerolehan(source.get("harga_perolehan", BigDecimal.class));
         eventPayload.setIdPelmuatAkhir(source.get("id_pelmuat_akhir", String.class));
         eventPayload.setIdPengguna(source.get("id_pengguna", String.class));
@@ -70,7 +70,6 @@ public class HeaderUpdatedEventReadConverter implements Converter<Row, HeaderUpd
         var event = new HeaderUpdatedEvent(source.get("event_id", String.class));
         event.setEventType(source.get("event_type", String.class));
         event.setAggregateId(source.get("aggregate_id", String.class));
-        event.setVersion(source.get("version", Long.class));
         event.setEventHandler(source.get("event_handler", String.class));
         var eventVersion = Optional.ofNullable(source.get("version", Long.class));
         eventVersion.ifPresent(event::setVersion);

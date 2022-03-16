@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class HeaderCreatedEventResponseModel {
     private String eventId;
     private String eventType;
+    private long version;
     private String eventHandler;
     private String eventReferenceId;
     private HeaderPayloadResponseModel data;
@@ -22,6 +23,7 @@ public class HeaderCreatedEventResponseModel {
     public HeaderCreatedEventResponseModel(HeaderCreatedEvent event) {
         this.eventId = event.getEventId();
         this.eventType = event.getEventType();
+        this.version = event.getVersion();
         this.eventHandler = event.getEventHandler();
         this.eventReferenceId = event.getEventReferenceId();
         this.data = new HeaderPayloadResponseModel(event.getData());

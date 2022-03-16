@@ -3,6 +3,7 @@ package id.go.beacukai.scswriter.domain.service;
 import id.go.beacukai.scs.sharedkernel.domain.event.HeaderCreatedEvent;
 import id.go.beacukai.scs.sharedkernel.domain.event.HeaderUpdatedEvent;
 import id.go.beacukai.scswriter.application.port.incoming.HeaderCommandService;
+import id.go.beacukai.scswriter.application.port.outgoing.HeaderBaseEventRepository;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCommandRepository;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderCreatedEventRepository;
 import id.go.beacukai.scswriter.application.port.outgoing.HeaderUpdatedEventRepository;
@@ -22,17 +23,21 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class HeaderCommandServiceImpl implements HeaderCommandService {
 
+    //TODO:: refactor to use one event's repo for all
     private final HeaderCommandRepository headerCommandRepository;
     private final HeaderCreatedEventRepository headerCreatedEventRepository;
     private final HeaderUpdatedEventRepository headerUpdatedEventRepository;
+    private final HeaderBaseEventRepository headerBaseEventRepository;
     private final TransactionalOperator operator;
 
     public HeaderCommandServiceImpl(
             HeaderCommandRepository headerCommandRepository, HeaderCreatedEventRepository headerCreatedEventRepository,
-            HeaderUpdatedEventRepository headerUpdatedEventRepository, TransactionalOperator operator) {
+            HeaderUpdatedEventRepository headerUpdatedEventRepository, HeaderBaseEventRepository headerBaseEventRepository,
+            TransactionalOperator operator) {
         this.headerCommandRepository = headerCommandRepository;
         this.headerCreatedEventRepository = headerCreatedEventRepository;
         this.headerUpdatedEventRepository = headerUpdatedEventRepository;
+        this.headerBaseEventRepository = headerBaseEventRepository;
         this.operator = operator;
     }
 
@@ -182,24 +187,21 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
                     if (updatedHeader.getLokasiTujuan() != null) {
                         currentHeader.setLokasiTujuan(updatedHeader.getLokasiTujuan());
                     }
-                    var updatedEvent = currentHeader.toUpdatedEvent();
+                    final HeaderUpdatedEvent updatedEvent = currentHeader.toUpdatedEvent();
                     updatedEvent.setAggregateId(currentHeader.getIdHeader());
-//                    var currentAggregateRecord = headerUpdatedEventRepository
-//                            .findFirstByAggregateIdOrderByTimestampDesc(updatedHeader.getIdHeader()).toFuture();
-//                    try {
-//                        var lastAggregateRecord = currentAggregateRecord.get();
-//                        if (lastAggregateRecord != null) {
-//                            updatedEvent.setVersion(lastAggregateRecord.getVersion() + 1);
-//                        }
-//                    } catch (InterruptedException | ExecutionException e) {
-//                        log.error(e.getMessage());
-//                    }
-                    // TODO set updatedEvent version
-                    return headerCommandRepository.save(currentHeader).thenReturn(updatedEvent)
-                            .flatMap(headerUpdatedEventRepository::save)
-                            .doOnError(System.out::println)
-                            .as(operator::transactional);
+                    var totalAggregateRecords = getTotalAggregateRecords(currentHeader.getIdHeader()).log();
+                    return totalAggregateRecords.flatMap(c -> {
+                        updatedEvent.setVersion((c + 1) - 1); // minus 1 as event's version always started from '0'
+                        return headerCommandRepository.save(currentHeader).thenReturn(updatedEvent)
+                                .flatMap(headerUpdatedEventRepository::save)
+                                .doOnError(System.out::println)
+                                .as(operator::transactional);
+                    });
                 });
+    }
+
+    private synchronized Mono<Long> getTotalAggregateRecords(String aggregateId) {
+        return headerBaseEventRepository.countByAggregateId(aggregateId);
     }
 
     private String newNomorAju(String kodeDokumen, String idPerusahaan)
