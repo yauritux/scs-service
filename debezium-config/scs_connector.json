@@ -1,0 +1,13 @@
+{
+  "name": "scs-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.hostname": "scswdb",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "database.password": "Tux#997799",
+    "database.dbname": "scswdb",
+    "database.server.name": "scswdb1",
+    "table.whitelist": "public.domain_events"
+  }
+}
