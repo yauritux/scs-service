@@ -244,6 +244,7 @@ public class HeaderCommandServiceImpl implements HeaderCommandService {
                     final HeaderUpdatedEvent updatedEvent = currentHeader.toUpdatedEvent();
                     updatedEvent.setAggregateId(currentHeader.getIdHeader());
                     var totalAggregateRecords = getTotalAggregateRecords(currentHeader.getIdHeader()).log();
+
                     return totalAggregateRecords.flatMap(c -> {
                         updatedEvent.setVersion((c + 1) - 1); // minus 1 as event's version always started from '0'
                         return headerCommandRepository.save(currentHeader).thenReturn(updatedEvent)

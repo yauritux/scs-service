@@ -139,6 +139,7 @@ class HeaderCommandServiceImplTest {
         currentHeader.setNamaPerusahaan("PT. DEMO PORTAL");
         currentHeader.setRoleEntitas("IMPORTIR");
         currentHeader.setNomorAju("00002012345620220224000001");
+        currentHeader.setKodeDokumen("20");
 
         Header updatedHeader = currentHeader;
         updatedHeader.setIsNew(false);
@@ -149,6 +150,7 @@ class HeaderCommandServiceImplTest {
 
         when(headerCommandRepositoryMock.findById(idHeader)).thenReturn(Mono.just(currentHeader));
         when(headerCommandRepositoryMock.save(isA(Header.class))).thenReturn(Mono.just(updatedHeader));
+        when(headerBaseEventRepositoryMock.countByAggregateId(any(String.class))).thenReturn(Mono.just(1L));
         when(operatorMock.transactional(any(Mono.class))).thenReturn(Mono.just(updatedEvent));
 
         verify(currentHeader, times(1)).setJumlahVolume(2500.25);
