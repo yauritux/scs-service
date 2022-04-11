@@ -35,7 +35,16 @@ Another benefit from this kind of **CQRS** pattern is that we can distribute the
    Content-Length: 369
    Server: Jetty(9.4.20.v20190813)
    ```
-4. Run the `scs-writer` service by `cd`-ing into the `scs-writer` folder and execute this command : `mvn spring-boot:run`.
+4. Setup kafka topic
+   a. enter into kafka container shell
+   ```
+   docker container exec -it kafka /bin/sh
+   ```
+   b. create the topic with a format of <database-server-name>.<database-schema-name>.<table-name> 
+   ```
+   /kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --topic scswdb1.public.domain_events --partitions 3 --replication-factor 1
+   ```
+5. Run the `scs-writer` service by `cd`-ing into the `scs-writer` folder and execute this command : `mvn spring-boot:run`.
 
 ## Test Endpoints
 
