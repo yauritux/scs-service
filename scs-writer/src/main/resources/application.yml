@@ -1,3 +1,5 @@
+server:
+  port: 8090
 spring:
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/scswdb
