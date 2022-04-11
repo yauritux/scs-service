@@ -4,12 +4,13 @@ SCS stands for `Single Core Service` is one of the Bea Cukai's **reactive servic
 It's undisputed that **Document** is something that Bea Cukai deals day-to-day, hence it's become part of the **core application services**. 
 This particular `scs-service` is built using some latest Java technologies as following:
 - **Java 11**.
-- **Spring 5**, with embedded **projectreactor** to leverage the reactive streaming behavior.
+- **Spring 5**, with an embedded **projectreactor** to leverage the reactive streaming behavior.
 - **Spring R2DBC**, i.e. Reactive Relational Database Connectivity to ensure all database operations won't be blocking the Thread (a.k.a. *non-blocking*).
 
 Other stacks being used (wrapped inside docker-compose):
 - PostgreSQL version 14 for both writer and reader databases.
-- Confluent Kafka (along with Zookeeper and other stuffs such as kafka-connect, etc) 
+- Apache Kafka (along with Zookeeper)
+- Kafka Connect and Debezium that work together as our CDC components.
 
 The architecture itself is based on the **EDA** (`Event-Driven Architecture`) which also embrace the **CQRS** (`Command-Query-Responsibility-Segregation`) pattern to give a separation-of-concerns between the **Command** (a.k.a. `writer service`) and the **Query** (a.k.a. `reader service`).
 Therefore, it gives us more freedom to scale-up independently those services. For instance, if the reading traffic from users were found to be more intensive than the writing operation, then we can scale-up the `reader service` independently from the `writer service`. 
@@ -19,7 +20,22 @@ Another benefit from this kind of **CQRS** pattern is that we can distribute the
 
 1. `cd` into the root project directory
 2. Run all dependent services: `docker-compose up`
-3. Run the `scs-writer` service by `cd`-ing into the `scs-writer` folder and execute this command : `mvn spring-boot:run`.
+3. Apply `scs-connector.json` to our **Kafka Connect** endpoint through this following steps:
+   a. `cd` into `debezium-config` directory
+   b. Run this command:
+   ```
+   curl -i -X POST -H "Accept: application/json" -H "Content-Type: application/json" localhost:8083/connectors --data "@scs_connector.json"
+   ```
+   If everyhing ok, you'll get more or less like these following response:
+   ```
+   HTTP/1.1 201 Created
+   Date: Mon, 11 Apr 2022 10:40:24 GMT
+   Location: http://localhost:8083/connectors/scs-connector
+   Content-Type: application/json
+   Content-Length: 369
+   Server: Jetty(9.4.20.v20190813)
+   ```
+4. Run the `scs-writer` service by `cd`-ing into the `scs-writer` folder and execute this command : `mvn spring-boot:run`.
 
 ## Test Endpoints
 
