@@ -21,12 +21,12 @@ Another benefit from this kind of **CQRS** pattern is that we can distribute the
 1. `cd` into the root project directory
 2. Run all dependent services: `docker-compose up`
 3. Apply `scs-connector.json` to our **Kafka Connect** endpoint through this following steps:
-   a. `cd` into `debezium-config` directory
-   b. Run this command:
+   * `cd` into `debezium-config` directory
+   * Run this command:
    ```
    curl -i -X POST -H "Accept: application/json" -H "Content-Type: application/json" localhost:8083/connectors --data "@scs_connector.json"
    ```
-   If everyhing ok, you'll get more or less like these following response:
+   If everything ok, you'll get more or less like these following response:
    ```
    HTTP/1.1 201 Created
    Date: Mon, 11 Apr 2022 10:40:24 GMT
@@ -36,11 +36,11 @@ Another benefit from this kind of **CQRS** pattern is that we can distribute the
    Server: Jetty(9.4.20.v20190813)
    ```
 4. Setup kafka topic
-   a. enter into kafka container shell
+   * enter into kafka container shell
    ```
    docker container exec -it kafka /bin/sh
    ```
-   b. create the topic with a format of <database-server-name>.<database-schema-name>.<table-name> 
+   * create the topic with a format of <database-server-name>.<database-schema-name>.<table-name> 
    ```
    /kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --topic scswdb1.public.domain_events --partitions 3 --replication-factor 1
    ```
