@@ -1,7 +1,7 @@
 # scs-service
 
-SCS stands for `Single Core Service` is one of the Bea Cukai's **reactive service** within it's microservice ecosystem that responsible to handle various document operations.
-It's undisputed that **Document** is something that Bea Cukai deals day-to-day, hence it's become part of the **core application services**. 
+SCS stands for `Single Core Service` is one of Customs **reactive service** within it's microservice ecosystem that responsible to handle various document operations.
+It's undisputed that **Document** is something that Customs deals day-to-day, hence it's become part of the **core application services**. 
 This particular `scs-service` is built using some latest Java technologies as following:
 - **Java 11**.
 - **Spring 5**, with an embedded **projectreactor** to leverage the reactive streaming behavior.
